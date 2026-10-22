@@ -1,0 +1,17 @@
+{
+  "name": "Club Elcano · II Memorial Quini 2026",
+  "short_name": "Memorial Quini",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#03130d",
+  "theme_color": "#072218",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logoBillar.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

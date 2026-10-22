@@ -1,0 +1,135 @@
+/* ========================================================
+   DISEÑO ALTO CONTRASTE Y ALTA LEGIBILIDAD (CLUB ELCANO)
+   ======================================================== */
+
+body {
+  background-color: #03130d;
+  background-image: radial-gradient(circle at 50% 0%, #0c3826 0%, #03130d 90%);
+  color: #ffffff;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-size: 16px;
+}
+
+/* Tarjetas base: borde verde discreto que no satura la vista */
+.felt-card {
+  background-color: #072218;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+/* Borde dorado de 2px ÚNICAMENTE en las 4 tarjetas de arriba */
+#tab-standings .grid > .felt-card {
+  border: 2px solid #d4af37 !important;
+}
+
+/* Borde dorado en la barra de Modalidad */
+#tab-standings > div.felt-card:not(.overflow-hidden) {
+  border: 2px solid #d4af37 !important;
+}
+
+/* La tabla queda con borde oscuro fino integrado, sin marco amarillo */
+#tab-standings .overflow-hidden {
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Números grandes, con espaciado uniforme y cero limpio */
+.font-mono {
+  font-family: "Inter", "Segoe UI", Arial, sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" 1, "zero" 0 !important;
+  letter-spacing: 0.03em;
+}
+
+/* Botones de menú alineados en una sola fila */
+.nav-btn {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #0c3828;
+  border: 1.5px solid #10b981;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+}
+.nav-btn:hover {
+  background-color: #12503a;
+  color: #facc15;
+}
+.nav-btn.active {
+  background-color: #d4af37 !important;
+  color: #04140e !important;
+  border-color: #ffffff !important;
+  font-weight: 800;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+}
+
+/* Botones de filtro de modalidad */
+.mod-filter-btn {
+  font-size: 0.9rem;
+  font-weight: 700;
+  background-color: #04140e;
+  color: #ffffff;
+  border: 1.5px solid #34d399;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+}
+.mod-filter-btn.active {
+  background-color: #facc15;
+  color: #04140e;
+  border-color: #ffffff;
+  font-weight: 900;
+}
+
+/* Bolas de billar con relieve nítido */
+.ball-white {
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #cbd5e1 70%, #64748b 100%);
+  border: 1px solid #ffffff;
+}
+.ball-yellow {
+  background: radial-gradient(circle at 30% 30%, #fef08a 0%, #eab308 65%, #854d0e 100%);
+  border: 1px solid #fef08a;
+}
+
+/* Destacado de jugador en turno */
+.active-turn-glow {
+  border: 3px solid #facc15 !important;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.5) !important;
+}
+
+/* Estilos de alta visibilidad para la tabla */
+#standings-tbody tr {
+  border-bottom: 1.5px solid #0f4d36;
+}
+#standings-tbody tr:nth-child(even) {
+  background-color: rgba(3, 19, 13, 0.45);
+}
+#standings-tbody tr:hover {
+  background-color: rgba(18, 80, 58, 0.6);
+}
+
+/* Mayor nitidez en los textos secundarios de las tarjetas KPI */
+.felt-card p, .felt-card span.text-xs {
+  color: #cbd5e1 !important;
+}
+.felt-card p.text-gold-400 {
+  color: #facc15 !important;
+}
+/* Zona Play-Off (Top 4 Clasificados) */
+.row-playoff {
+  background-color: rgba(212, 175, 55, 0.08) !important;
+}
+.row-playoff:hover {
+  background-color: rgba(212, 175, 55, 0.16) !important;
+}
+
+/* Tarjetas de Cruces de Semifinales y Final */
+.bracket-card {
+  background-color: #04140e;
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.bracket-card.active-match {
+  border-color: #d4af37;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
