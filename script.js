@@ -51,27 +51,19 @@ function isPlayoffRound(round) {
 // INICIALIZACIÓN Y ALMACENAMIENTO
 // ==========================================
 function loadState() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      state.players = parsed.players && parsed.players.length > 0 ? parsed.players : [...DEFAULT_PLAYERS];
-      state.matches = parsed.matches || [];
-      if (parsed.live) state.live = { ...state.live, ...parsed.live };
-    } catch (e) {
-      state.players = [...DEFAULT_PLAYERS];
-      state.matches = [];
+  const local = localStorage.getItem("billar_state");
+  let localData = local ? JSON.parse(local) : null;
+
+  // Si existe datos.js y tiene más partidas que la memoria del móvil, actualizamos
+  if (typeof DATOS_INICIALES !== "undefined" && DATOS_INICIALES.matches) {
+    if (!localData || !localData.matches || DATOS_INICIALES.matches.length > localData.matches.length) {
+      localStorage.setItem("billar_state", JSON.stringify(DATOS_INICIALES));
+      return DATOS_INICIALES;
     }
-  } else if (typeof DATOS_TORNEO !== "undefined" && DATOS_TORNEO.matches) {
-    // Si no hay nada en localStorage, carga automáticamente el contenido de datos.js
-    state.players = DATOS_TORNEO.players || [...DEFAULT_PLAYERS];
-    state.matches = DATOS_TORNEO.matches || [];
-    saveState();
-  } else {
-    state.players = [...DEFAULT_PLAYERS];
-    state.matches = [];
-    saveState();
   }
+
+  if (localData) return localData;
+  return typeof DATOS_INICIALES !== "undefined" ? DATOS_INICIALES : { players: [], matches: [] };
 }
 
 function saveState() {

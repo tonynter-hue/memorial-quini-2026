@@ -1371,9 +1371,11 @@
       </div>
     </div>
 
-<!-- Carga inicial autónoma de datos -->
-    <script src="datos.js"></script>
-
+<!-- Carga automática siempre actualizada sin tocar versiones a mano -->
+    <script>
+      document.write('<script src="datos.js?t=' + Date.now() + '"><\/script>');
+    </script>
+    
     <!-- Tu lógica en JavaScript -->
     <script src="script.js"></script>
   </body>
