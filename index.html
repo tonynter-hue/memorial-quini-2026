@@ -1371,12 +1371,8 @@
       </div>
     </div>
 
-<!-- Carga automática siempre actualizada sin tocar versiones a mano -->
-    <script>
-      document.write('<script src="datos.js?t=' + Date.now() + '"><\/script>');
-    </script>
-    
-    <!-- Tu lógica en JavaScript -->
+<!-- Carga síncrona de datos y lógica -->
+    <script src="datos.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
