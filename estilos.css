@@ -133,3 +133,95 @@ body {
   border-color: #d4af37;
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
 }
+/* ========================================================
+   OPTIMIZACIÓN MÓVIL (PANTALLAS DE MENOS DE 640px)
+   ======================================================== */
+@media (max-width: 640px) {
+  /* Reducir márgenes generales */
+  main {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 0.75rem !important;
+  }
+
+  /* Cabecera y logo compactos */
+  header img {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+  header h1 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Barra de navegación con scroll horizontal limpio sin barra fea */
+  nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-btn {
+    font-size: 0.75rem !important;
+    padding: 0.35rem 0.6rem !important;
+    border-radius: 6px !important;
+  }
+
+  /* Tarjetas KPI compactas: reducen el alto a la mitad */
+  #tab-standings .grid {
+    gap: 0.5rem !important;
+  }
+  #tab-standings .grid > .felt-card {
+    padding: 0.5rem 0.65rem !important;
+    border-radius: 10px !important;
+  }
+  #tab-standings .grid > .felt-card span.text-xs {
+    font-size: 0.68rem !important;
+    line-height: 1 !important;
+  }
+  #tab-standings .grid > .felt-card .font-mono {
+    font-size: 1.35rem !important;
+    margin: 0.15rem 0 !important;
+    line-height: 1.1 !important;
+  }
+  #tab-standings .grid > .felt-card p {
+    font-size: 0.7rem !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Barra de controles compacta */
+  #tab-standings > div.felt-card:not(.overflow-hidden) {
+    padding: 0.5rem 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+  #standings-sort {
+    max-width: 150px;
+    font-size: 0.75rem !important;
+  }
+
+  /* Tabla de clasificación compacta: entran 8 jugadores en pantalla */
+  #standings-tbody td {
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+    padding-left: 0.4rem !important;
+    padding-right: 0.4rem !important;
+    font-size: 0.82rem !important;
+  }
+  table th {
+    padding-top: 0.6rem !important;
+    padding-bottom: 0.6rem !important;
+    padding-left: 0.4rem !important;
+    padding-right: 0.4rem !important;
+    font-size: 0.72rem !important;
+  }
+  
+  /* Nombre de jugador legible pero contenido */
+  #standings-tbody td:nth-child(2) button span {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

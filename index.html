@@ -231,63 +231,49 @@
         </div>
 
         <!-- Barra de Controles y Filtros -->
+        <!-- Barra de Controles y Filtros (Adaptada para Móvil y PC) -->
         <div
-          class="felt-card rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          class="felt-card rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4"
         >
-          <div class="flex items-center gap-2.5">
+          <div class="flex items-center justify-between sm:justify-start gap-2">
             <span
-              class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-300/80"
-              >Modalidad:</span
+              class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-300/80"
+              >Torneo:</span
             >
             <span
-              class="px-3.5 py-1.5 rounded-lg bg-gold-500/20 text-gold-400 border border-gold-500/50 font-extrabold text-xs sm:text-sm tracking-wide"
+              class="px-2.5 py-1 rounded-lg bg-gold-500/20 text-gold-400 border border-gold-500/50 font-black text-[11px] sm:text-xs tracking-wide"
             >
-              LIBRE (90 Carambolas)
+              LIBRE (90 Car.)
             </span>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2.5">
+          <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
             <div
-              class="flex items-center gap-2 bg-baize-950 border border-emerald-700/70 rounded-lg px-3 py-1.5"
+              class="flex items-center gap-1.5 bg-baize-950 border border-emerald-700/70 rounded-lg px-2.5 py-1.5 flex-1 sm:flex-initial"
             >
-              <span class="text-xs text-emerald-300/80 font-semibold"
-                >Ordenar:</span
-              >
+              <i data-lucide="arrow-down-up" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
               <select
                 id="standings-sort"
                 onchange="renderStandings()"
-                class="bg-transparent text-xs sm:text-sm font-bold text-white focus:outline-none cursor-pointer"
+                class="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer w-full"
               >
-                <option value="G" class="bg-baize-900">
-                  Partidos Ganados (G) + Desempate Oficial
-                </option>
-                <option value="SALDO" class="bg-baize-900">
-                  Saldo Carambolas (+/-)
-                </option>
-                <option value="PG" class="bg-baize-900">
-                  Promedio General (PG)
-                </option>
-                <option value="TB" class="bg-baize-900">
-                  Tres Bandas (3B)
-                </option>
-                <option value="MP" class="bg-baize-900">
-                  Mejor Promedio
-                </option>
-                <option value="SM" class="bg-baize-900">
-                  Serie Mayor (SM)
-                </option>
+                <option value="G" class="bg-baize-900">Ganados (Oficial)</option>
+                <option value="SALDO" class="bg-baize-900">Saldo (+/-)</option>
+                <option value="PG" class="bg-baize-900">Promedio (PG)</option>
+                <option value="TB" class="bg-baize-900">3 Bandas (3B)</option>
+                <option value="MP" class="bg-baize-900">Mejor Promedio</option>
+                <option value="SM" class="bg-baize-900">Serie Mayor</option>
               </select>
             </div>
             <button
               onclick="mostrarBoletinWhatsApp()"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-400/60 text-xs sm:text-sm font-extrabold transition-all shadow-md"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-400/60 text-xs font-extrabold transition-all shadow-md shrink-0"
             >
-              <i data-lucide="message-circle" class="w-4 h-4 text-gold-400"></i>
-              <span>Boletín WhatsApp</span>
+              <i data-lucide="message-circle" class="w-3.5 h-3.5 text-gold-400"></i>
+              <span>WhatsApp</span>
             </button>
           </div>
         </div>
-
         <!-- Tabla de Clasificación -->
         <div class="felt-card overflow-hidden">
           <div class="overflow-x-auto">
