@@ -1153,25 +1153,51 @@ function renderPlayers() {
     .join("");
 }
 
-function addPlayer(e) {
-  e.preventDefault();
+function addPlayer() {
+  if (!isAdmin) {
+    toggleAdminModal();
+    alert("Solo el administrador con PIN puede añadir jugadores.");
+    return;
+  }
+
   const input = document.getElementById("new-player-name");
   const name = input.value.trim();
-  if (!name || state.players.includes(name)) return;
+  if (!name) return;
+  if (state.players.includes(name)) {
+    showToast("Ese jugador ya existe en la lista.");
+    return;
+  }
+
   state.players.push(name);
   input.value = "";
   saveState();
+  subirEstadoAFirebase(); // Sube la nueva lista de socios a Firestore
   populatePlayerSelects();
   renderPlayers();
-  showToast(`Socio ${name} añadido.`);
+  showToast(`Jugador "${name}" añadido.`);
 }
 
 function removePlayer(name) {
+  if (!isAdmin) {
+    toggleAdminModal();
+    alert("Solo el administrador con PIN puede eliminar socios.");
+    return;
+  }
+
+  const hasMatches = state.matches.some((m) => m.p1 === name || m.p2 === name);
+  if (hasMatches) {
+    alert(`No puedes eliminar a "${name}" porque ya tiene partidas registradas.`);
+    return;
+  }
+
   if (!confirm(`¿Eliminar a ${name} de la lista de socios?`)) return;
+
   state.players = state.players.filter((p) => p !== name);
   saveState();
+  subirEstadoAFirebase(); // Guarda la lista actualizada en la nube
   populatePlayerSelects();
   renderPlayers();
+  showToast(`Socio "${name}" eliminado.`);
 }
 
 function downloadBackupJSON() {
