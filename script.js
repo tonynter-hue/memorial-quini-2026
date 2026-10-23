@@ -61,29 +61,6 @@ let state = {
   },
 };
 
-let state = {
-  players: [],
-  matches: [],
-  currentModalityFilter: "Libre",
-  editingMatchId: null,
-  live: {
-    p1: "Tony Elena",
-    p2: "Paco Vidal",
-    modality: "Libre",
-    target: 90,
-    maxInnings: 100,
-    score1: 0,
-    run1: 0,
-    hr1: 0,
-    tb1: 0,
-    score2: 0,
-    run2: 0,
-    hr2: 0,
-    tb2: 0,
-    innings: 1,
-    turn: 1,
-  },
-};
 
 // Comprueba si un partido es de Fase Final
 function isPlayoffRound(round) {
