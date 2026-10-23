@@ -1,3 +1,25 @@
+// ==========================================
+// CONFIGURACIÓN FIREBASE & SEGURIDAD PIN
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyC8TnUjhlyhz5VWlkdfiw57-xGX_1_8zcA",
+  authDomain: "memorial-quini-elcano.firebaseapp.com",
+  projectId: "memorial-quini-elcano",
+  storageBucket: "memorial-quini-elcano.firebasestorage.app",
+  messagingSenderId: "166426350048",
+  appId: "1:166426350048:web:9d9af0e329454a60f3db85"
+};
+
+// Inicializar Firebase Firestore
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+
+// PIN DE ADMINISTRADOR (cámbialo por las 4 cifras que quieras)
+const ADMIN_PIN = "1234";
+let isAdmin = false;
+
 const STORAGE_KEY = "club_elcano_billar_v4";
 
 const DEFAULT_PLAYERS = [
@@ -15,7 +37,29 @@ const DEFAULT_PLAYERS = [
   "Paco Vidal",
 ];
 
-const INITIAL_MATCHES = [];
+let state = {
+  players: [],
+  matches: [],
+  currentModalityFilter: "Libre",
+  editingMatchId: null,
+  live: {
+    p1: "Tony Elena",
+    p2: "Paco Vidal",
+    modality: "Libre",
+    target: 90,
+    maxInnings: 100,
+    score1: 0,
+    run1: 0,
+    hr1: 0,
+    tb1: 0,
+    score2: 0,
+    run2: 0,
+    hr2: 0,
+    tb2: 0,
+    innings: 1,
+    turn: 1,
+  },
+};
 
 let state = {
   players: [],
@@ -48,40 +92,54 @@ function isPlayoffRound(round) {
 }
 
 // ==========================================
-// INICIALIZACIÓN Y ALMACENAMIENTO (CORREGIDO)
+// SINCRONIZACIÓN NUBE (FIRESTORE) Y LOCAL
 // ==========================================
-function loadState() {
+function initRealtimeSync() {
+  db.collection("torneo").doc("memorial_quini")
+    .onSnapshot((doc) => {
+      if (doc.exists) {
+        const cloudData = doc.data();
+        if (cloudData.matches) {
+          state.matches = cloudData.matches;
+          state.players = cloudData.players || DEFAULT_PLAYERS;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          renderStandings();
+          renderHistory();
+        }
+      } else {
+        // Primera vez: sube las 30 partidas de datos.js a la nube
+        subirEstadoAFirebase();
+      }
+    }, (error) => {
+      console.warn("Conexión en modo local:", error);
+      loadStateFallback();
+    });
+}
+
+function subirEstadoAFirebase() {
+  db.collection("torneo").doc("memorial_quini").set({
+    players: state.players,
+    matches: state.matches,
+    updatedAt: new Date().toISOString()
+  }).then(() => {
+    showToast("Datos sincronizados en la nube.");
+  }).catch((err) => {
+    console.error("Error al subir a Firestore:", err);
+  });
+}
+
+function loadStateFallback() {
   const local = localStorage.getItem(STORAGE_KEY);
-  let localData = local ? JSON.parse(local) : null;
-
-  // Detección universal del objeto que venga en datos.js
-  const fuenteExterna =
-    typeof DATOS_TORNEO !== "undefined"
-      ? DATOS_TORNEO
-      : typeof DATOS_INICIALES !== "undefined"
-      ? DATOS_INICIALES
-      : null;
-
-  // Si datos.js trae más partidas o la memoria local está vacía, manda datos.js
-  if (fuenteExterna && fuenteExterna.matches) {
-    if (!localData || !localData.matches || fuenteExterna.matches.length >= localData.matches.length) {
-      state.players = fuenteExterna.players || DEFAULT_PLAYERS;
-      state.matches = fuenteExterna.matches || [];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      return state;
-    }
+  if (local) {
+    const data = JSON.parse(local);
+    state.players = data.players || DEFAULT_PLAYERS;
+    state.matches = data.matches || [];
+  } else if (typeof DATOS_TORNEO !== "undefined") {
+    state.players = DATOS_TORNEO.players;
+    state.matches = DATOS_TORNEO.matches;
   }
-
-  if (localData) {
-    state.players = localData.players || DEFAULT_PLAYERS;
-    state.matches = localData.matches || [];
-    if (localData.live) state.live = localData.live;
-    return state;
-  }
-
-  state.players = DEFAULT_PLAYERS;
-  state.matches = [];
-  return state;
+  renderStandings();
+  renderHistory();
 }
 
 function saveState() {
@@ -94,7 +152,6 @@ function saveState() {
     }),
   );
 }
-
 // ==========================================
 // NAVEGACIÓN ENTRE PESTAÑAS
 // ==========================================
@@ -649,6 +706,57 @@ function copiarTextoBoletin() {
 }
 
 // ==========================================
+// GESTIÓN DEL PIN DE ADMINISTRADOR
+// ==========================================
+function toggleAdminModal() {
+  if (isAdmin) {
+    isAdmin = false;
+    actualizarEstadoAdminUI();
+    showToast("Modo administrador bloqueado.");
+  } else {
+    const modal = document.getElementById("modal-pin");
+    const input = document.getElementById("input-pin-admin");
+    if (input) input.value = "";
+    if (modal) modal.classList.remove("hidden");
+    setTimeout(() => { if (input) input.focus(); }, 150);
+  }
+}
+
+function cerrarPinModal() {
+  const modal = document.getElementById("modal-pin");
+  if (modal) modal.classList.add("hidden");
+}
+
+function verificarPinAdmin() {
+  const input = document.getElementById("input-pin-admin");
+  if (!input) return;
+
+  if (input.value === ADMIN_PIN) {
+    isAdmin = true;
+    cerrarPinModal();
+    actualizarEstadoAdminUI();
+    showToast("¡Acceso concedido! Ya puedes gestionar actas.");
+  } else {
+    alert("PIN incorrecto. Acceso denegado.");
+    input.value = "";
+  }
+}
+
+function actualizarEstadoAdminUI() {
+  const icon = document.getElementById("icon-admin-lock");
+  const text = document.getElementById("text-admin-status");
+
+  if (isAdmin) {
+    if (icon) icon.setAttribute("data-lucide", "lock-open");
+    if (text) text.textContent = "Admin ON";
+  } else {
+    if (icon) icon.setAttribute("data-lucide", "lock");
+    if (text) text.textContent = "Acceso PIN";
+  }
+  lucide.createIcons();
+}
+
+// ==========================================
 // REGISTRAR Y EDITAR ACTAS
 // ==========================================
 function populatePlayerSelects() {
@@ -745,6 +853,14 @@ function cancelEditMatch() {
 
 function saveMatchRecord(e) {
   e.preventDefault();
+
+  // Comprobación de seguridad: exige PIN
+  if (!isAdmin) {
+    toggleAdminModal();
+    alert("Debes identificarte con el PIN de administrador para guardar actas.");
+    return;
+  }
+
   const p1 = document.getElementById("form-p1").value;
   const p2 = document.getElementById("form-p2").value;
   const car1 = Number(document.getElementById("form-car1").value);
@@ -803,6 +919,7 @@ function saveMatchRecord(e) {
   updateFormPreview();
 
   saveState();
+  subirEstadoAFirebase(); // Se envía inmediatamente a la nube para todos los móviles
   switchTab("standings");
 }
 
@@ -877,9 +994,15 @@ function renderHistory() {
 }
 
 function deleteMatch(id) {
+  if (!isAdmin) {
+    toggleAdminModal();
+    alert("Solo el administrador con PIN puede eliminar actas.");
+    return;
+  }
   if (!confirm("¿Seguro que quieres eliminar esta acta? La clasificación se recalculará automáticamente.")) return;
   state.matches = state.matches.filter((m) => m.id !== id);
   saveState();
+  subirEstadoAFirebase();
   renderHistory();
   renderStandings();
   showToast("Acta eliminada.");
@@ -1138,9 +1261,9 @@ function showToast(msg) {
   setTimeout(() => t.classList.add("hidden"), 3200);
 }
 
-// Arranque inicial
 document.addEventListener("DOMContentLoaded", () => {
-  loadState();
+  loadStateFallback(); // Carga rápida inicial desde la memoria local
+  initRealtimeSync();  // Conecta la escucha en tiempo real con Firebase Firestore
   populatePlayerSelects();
   const dateInput = document.getElementById("form-date");
   if (dateInput) dateInput.value = new Date().toISOString().split("T")[0];

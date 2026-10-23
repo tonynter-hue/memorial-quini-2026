@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+< lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -63,7 +63,7 @@
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="estilos.css" />
   </head>
-  <body
+  <
     class="min-h-screen flex flex-col selection:bg-gold-500 selection:text-baize-950"
   >
     <!-- CABECERA PRINCIPAL -->
@@ -142,6 +142,15 @@
             >
               <i data-lucide="users" class="w-4 h-4"></i>
               <span>Jugadores y Datos</span>
+            </button>
+            <button
+              onclick="toggleAdminModal()"
+              id="btn-admin-lock"
+              class="nav-btn flex items-center gap-1.5 whitespace-nowrap bg-baize-950/80 border-gold-500/50 text-gold-400"
+              title="Acceso de Administrador"
+            >
+              <i id="icon-admin-lock" data-lucide="lock" class="w-4 h-4"></i>
+              <span id="text-admin-status">Acceso PIN</span>
             </button>
           </nav>
         </div>
@@ -1371,8 +1380,50 @@
       </div>
     </div>
 
-<!-- Carga síncrona de datos y lógica -->
+<!-- MODAL DE INTRODUCCIÓN DE PIN -->
+    <div
+      id="modal-pin"
+      class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div class="felt-card max-w-sm w-full p-6 space-y-4 border-2 border-gold-500 rounded-2xl text-center">
+        <div class="w-12 h-12 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center mx-auto border border-gold-500/50">
+          <i data-lucide="shield-check" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white uppercase tracking-wide">Control de Administrador</h3>
+        <p class="text-xs text-slate-300">Introduce el PIN de 4 cifras para registrar, editar o borrar actas:</p>
+        <input
+          type="password"
+          id="input-pin-admin"
+          maxlength="4"
+          placeholder="••••"
+          class="w-32 mx-auto text-center font-mono text-2xl tracking-widest bg-baize-950 border-2 border-gold-500 rounded-xl py-2 text-white focus:outline-none"
+        />
+        <div class="flex justify-center gap-2 pt-2">
+          <button
+            type="button"
+            onclick="cerrarPinModal()"
+            class="px-4 py-2 rounded-xl bg-baize-800 hover:bg-baize-700 text-slate-300 text-xs font-bold uppercase"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onclick="verificarPinAdmin()"
+            class="px-5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-baize-950 text-xs font-black uppercase shadow-lg"
+          >
+            Desbloquear
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Librerías oficiales Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+    <!-- Datos locales de reserva y tu script -->
     <script src="datos.js"></script>
     <script src="script.js"></script>
+    
   </body>
 </html>
