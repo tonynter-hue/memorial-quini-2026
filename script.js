@@ -17,7 +17,7 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 // PIN DE ADMINISTRADOR (cámbialo por las 4 cifras que quieras)
-const ADMIN_PIN = "1234";
+const ADMIN_PIN = "9292";
 let isAdmin = false;
 
 const STORAGE_KEY = "club_elcano_billar_v4";
