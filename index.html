@@ -17,7 +17,8 @@
         navigator.serviceWorker.register("sw.js");
       }
     </script>
-<link rel="icon" type="image/x-icon" href="logoBillar.ico" />
+<link rel="apple-touch-icon" href="logo-192.png" />
+<link rel="icon" type="image/png" href="logo-192.png" />
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -75,25 +76,21 @@
         >
           <!-- Logo Oficial y Título -->
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3.5">
-              <img
-                src="logoBillar.jpg"
-                alt="Club Elcano Billar"
-                class="w-14 h-14 rounded-xl object-contain shrink-0"
-              />
-              <div>
-                <h1
-                  class="font-display font-black text-xl sm:text-2xl tracking-wider text-white uppercase leading-tight"
-                >
-                  Club Elcano
-                </h1>
-                <p
-                  class="text-sm sm:text-base font-bold text-gold-400 tracking-wide mt-0.5"
-                >
-                  II Memorial Quini 2026
-                </p>
-              </div>
-            </div>
+            <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+  <img
+    src="logoBillar.jpg"
+    alt="Club Elcano"
+    class="w-12 h-12 sm:w-[92px] sm:h-[92px] object-contain rounded-xl shadow-md border border-gold-500/30 shrink-0"
+  />
+  <div class="flex flex-col justify-between leading-none">
+    <h1 class="font-serif tracking-wider text-gold-400 font-bold text-lg sm:text-2xl leading-none">
+      CLUB<br>ELCANO
+    </h1>
+    <span class="text-xs sm:text-sm text-gold-500/90 font-medium tracking-wide mt-1">
+      II Memorial Quini 2026
+    </span>
+  </div>
+</div>
           </div>
 
           <!-- Navegación de Pestañas (En una sola fila fija) -->
