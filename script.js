@@ -282,13 +282,43 @@ function renderStandings() {
   if (kpiBestSmPlayer) kpiBestSmPlayer.textContent = bestSMName;
 
   // Renderizar filas de la tabla con distinción visual para los 4 de Play-Off
+  // 1. Cambiar el título de la columna en la cabecera (busca automáticamente la 6ª columna)
+  const thColumna6 = document.getElementById("th-dinamica") || document.querySelector("#tab-standings table thead tr th:nth-child(6)") || document.querySelector("table thead tr th:nth-child(6)");
+  if (thColumna6) {
+    if (sortBy === "PG") thColumna6.textContent = "PROM.";
+    else if (sortBy === "SM") thColumna6.textContent = "S.M.";
+    else if (sortBy === "TB") thColumna6.textContent = "3 BANDAS";
+    else if (sortBy === "MP") thColumna6.textContent = "M. PROM.";
+    else thColumna6.textContent = "SALDO";
+  }
+
+  // 2. Renderizar filas mostrando el dato elegido en esa columna visible
   const tbody = document.getElementById("standings-tbody");
   if (tbody) {
     tbody.innerHTML = rows
       .map((r, i) => {
-        const saldoStr = r.saldo > 0 ? `+${r.saldo}` : `${r.saldo}`;
-        const saldoColor =
-          r.saldo > 0 ? "text-emerald-300 font-black" : r.saldo < 0 ? "text-rose-400 font-black" : "text-gold-400 font-bold";
+        // Calcular qué dato pintar en la columna visible según el orden
+        let datoStr = "";
+        let datoColor = "text-gold-400 font-bold";
+
+        if (sortBy === "PG") {
+          datoStr = r.pg.toFixed(3);
+          datoColor = "text-emerald-200 font-black";
+        } else if (sortBy === "SM") {
+          datoStr = r.sm;
+          datoColor = "text-gold-400 font-black";
+        } else if (sortBy === "TB") {
+          datoStr = r.tb;
+          datoColor = "text-amber-300 font-black";
+        } else if (sortBy === "MP") {
+          datoStr = r.mp > 0 ? r.mp.toFixed(3) : "0.000";
+          datoColor = "text-slate-100 font-bold";
+        } else {
+          // Por defecto o por Ganados / Saldo
+          datoStr = r.saldo > 0 ? `+${r.saldo}` : `${r.saldo}`;
+          datoColor = r.saldo > 0 ? "text-emerald-300 font-black" : r.saldo < 0 ? "text-rose-400 font-black" : "text-gold-400 font-bold";
+        }
+
         const isPlayoff = i < 4;
         const playoffBadge = isPlayoff
           ? `<span class="ml-2 text-[10px] uppercase font-black px-1.5 py-0.5 rounded bg-gold-500/20 text-gold-400 border border-gold-500/40">Play-Off</span>`
@@ -307,7 +337,7 @@ function renderStandings() {
               <td class="py-4 px-3 text-center font-mono font-bold text-slate-100 text-base">${r.pj}</td>
               <td class="py-4 px-3 text-center font-mono font-black text-emerald-400 text-lg">${r.g}</td>
               <td class="py-4 px-3 text-center font-mono font-bold text-rose-300 text-base">${r.p}</td>
-              <td class="py-4 px-4 text-center font-mono text-lg bg-gold-500/10 ${saldoColor}">${saldoStr}</td>
+              <td class="py-4 px-4 text-center font-mono text-lg bg-gold-500/10 ${datoColor}">${datoStr}</td>
               <td class="py-4 px-4 text-center font-mono font-black text-amber-300 text-lg">${r.tb}</td>
               <td class="py-4 px-3 text-center font-mono font-medium text-slate-200 text-base">${r.ent}</td>
               <td class="py-4 px-4 text-center font-mono font-black text-emerald-200 text-lg bg-emerald-950/70">${r.pg.toFixed(3)}</td>
