@@ -1217,6 +1217,31 @@ function deleteMatch(id) {
 // ==========================================
 // MARCADOR EN VIVO
 // ==========================================
+let liveTimerInterval = null;
+
+function ensureLiveTiming() {
+  const l = state.live;
+  const now = new Date();
+  if (!l.date) {
+    l.date = now.toISOString().split("T")[0];
+  }
+  if (!l.startTime) {
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+    l.startTime = `${hh}:${mm}`;
+  }
+  if (!l.startTimestamp) {
+    l.startTimestamp = now.getTime();
+  }
+}
+
+function getLiveDurationMinutes() {
+  ensureLiveTiming();
+  const start = state.live.startTimestamp || Date.now();
+  const diffMs = Math.max(0, Date.now() - start);
+  return Math.floor(diffMs / 60000);
+}
+
 function updateLiveSetup() {
   state.live.p1 = document.getElementById("live-p1-select").value;
   state.live.p2 = document.getElementById("live-p2-select").value;
@@ -1235,13 +1260,17 @@ function toggleP1Ball() {
 }
 
 function renderLiveScoreboard() {
+  ensureLiveTiming();
   const l = state.live;
   const p1Select = document.getElementById("live-p1-select");
   const p2Select = document.getElementById("live-p2-select");
   const modSelect = document.getElementById("live-modality");
   const targetInput = document.getElementById("live-target");
   const maxInnInput = document.getElementById("live-max-innings");
+
   const btnP1Ball = document.getElementById("live-p1-ball-btn");
+  const dotP1Ball = document.getElementById("live-p1-ball-dot");
+  const textP1Ball = document.getElementById("live-p1-ball-text");
 
   const p1Ball = l.p1Ball || "blanca";
 
@@ -1251,12 +1280,22 @@ function renderLiveScoreboard() {
   if (targetInput) targetInput.value = l.target;
   if (maxInnInput) maxInnInput.value = l.maxInnings;
 
-  // Botón selector exclusivo del Jugador 1
-  if (btnP1Ball) {
-    btnP1Ball.textContent = p1Ball === "blanca" ? "⚪ Blanca" : "🟡 Amarilla";
+  // 1. Selector de bola: bola blanca = punto blanco y texto blanco; bola amarilla = punto amarillo y texto amarillo
+  if (btnP1Ball && dotP1Ball && textP1Ball) {
+    if (p1Ball === "blanca") {
+      btnP1Ball.className = "px-2.5 py-0.5 rounded-lg bg-baize-900 border border-slate-200 text-white font-bold transition-all cursor-pointer inline-flex items-center gap-1.5";
+      dotP1Ball.className = "w-2.5 h-2.5 rounded-full ball-white inline-block";
+      textP1Ball.textContent = "Blanca";
+      textP1Ball.className = "text-white text-[11px] font-bold";
+    } else {
+      btnP1Ball.className = "px-2.5 py-0.5 rounded-lg bg-baize-900 border border-yellow-400 text-yellow-300 font-bold transition-all cursor-pointer inline-flex items-center gap-1.5";
+      dotP1Ball.className = "w-2.5 h-2.5 rounded-full ball-yellow inline-block";
+      textP1Ball.textContent = "Amarilla";
+      textP1Ball.className = "text-yellow-300 text-[11px] font-bold";
+    }
   }
 
-  // Actualizar indicadores visuales de bola en las tarjetas según la elección
+  // Indicadores de bola en las tarjetas
   const dot1 = document.getElementById("live-ball-dot-1");
   const text1 = document.getElementById("live-ball-name-1");
   const dot2 = document.getElementById("live-ball-dot-2");
@@ -1286,6 +1325,7 @@ function renderLiveScoreboard() {
     }
   }
 
+  // Nombres y Puntuaciones
   const nameP1 = document.getElementById("live-name-p1");
   const nameP2 = document.getElementById("live-name-p2");
   const scoreP1 = document.getElementById("live-score-p1");
@@ -1316,11 +1356,29 @@ function renderLiveScoreboard() {
   if (avgP1) avgP1.textContent = (l.score1 / inn).toFixed(3);
   if (avgP2) avgP2.textContent = (l.score2 / inn).toFixed(3);
 
+  // Panel central: Modalidad y Distancia
   const badgeMod = document.getElementById("live-badge-modality");
   const targetDisp = document.getElementById("live-target-display");
   if (badgeMod) badgeMod.textContent = l.modality;
   if (targetDisp) targetDisp.textContent = `Distancia: ${l.target} car. | Límite: ${l.maxInnings} ent.`;
 
+  // 3. Fecha, hora y duración en minutos
+  const dispDate = document.getElementById("live-display-date");
+  const dispTime = document.getElementById("live-display-time");
+  const dispDuration = document.getElementById("live-display-duration");
+
+  if (dispDate && l.date) {
+    const parts = l.date.split("-");
+    dispDate.textContent = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : l.date;
+  }
+  if (dispTime && l.startTime) {
+    dispTime.textContent = l.startTime;
+  }
+  if (dispDuration) {
+    dispDuration.textContent = `${getLiveDurationMinutes()} min`;
+  }
+
+  // Resaltado de turno activo
   const c1 = document.getElementById("live-card-p1");
   const c2 = document.getElementById("live-card-p2");
   const b1 = document.getElementById("live-turn-badge-1");
@@ -1339,20 +1397,64 @@ function renderLiveScoreboard() {
       b1.classList.add("hidden");
     }
   }
+
+  // Temporizador para refrescar la duración en minutos automáticamente
+  if (!liveTimerInterval) {
+    liveTimerInterval = setInterval(() => {
+      const durEl = document.getElementById("live-display-duration");
+      if (durEl) durEl.textContent = `${getLiveDurationMinutes()} min`;
+    }, 30000);
+  }
 }
 
+// 4. Sumar carambolas y corrección inteligente de 3 Bandas
 function addLiveCarom(player, delta, es3B = false) {
   const l = state.live;
   if (player === 1) {
     l.score1 = Math.max(0, l.score1 + delta);
     l.run1 = Math.max(0, l.run1 + delta);
-    if (es3B) l.tb1 = Math.max(0, (l.tb1 || 0) + 1);
+    if (es3B) {
+      l.tb1 = Math.max(0, (l.tb1 || 0) + 1);
+      l.lastWas3B1 = true;
+    } else if (delta > 0) {
+      l.lastWas3B1 = false;
+    } else if (delta < 0) {
+      // Si el juez rectifica una de 3 bandas a 1 carambola y se pulsa -1
+      if (l.lastWas3B1 && (l.tb1 || 0) > 0) {
+        l.tb1 = Math.max(0, l.tb1 - 1);
+        l.lastWas3B1 = false;
+      }
+    }
     if (l.run1 > l.hr1) l.hr1 = l.run1;
   } else {
     l.score2 = Math.max(0, l.score2 + delta);
     l.run2 = Math.max(0, l.run2 + delta);
-    if (es3B) l.tb2 = Math.max(0, (l.tb2 || 0) + 1);
+    if (es3B) {
+      l.tb2 = Math.max(0, (l.tb2 || 0) + 1);
+      l.lastWas3B2 = true;
+    } else if (delta > 0) {
+      l.lastWas3B2 = false;
+    } else if (delta < 0) {
+      if (l.lastWas3B2 && (l.tb2 || 0) > 0) {
+        l.tb2 = Math.max(0, l.tb2 - 1);
+        l.lastWas3B2 = false;
+      }
+    }
     if (l.run2 > l.hr2) l.hr2 = l.run2;
+  }
+  saveState();
+  renderLiveScoreboard();
+}
+
+// Corrección manual del contador 3B pulsando el número
+function adjustLiveTB(player, delta) {
+  const l = state.live;
+  if (player === 1) {
+    l.tb1 = Math.max(0, (l.tb1 || 0) + delta);
+    l.lastWas3B1 = false;
+  } else {
+    l.tb2 = Math.max(0, (l.tb2 || 0) + delta);
+    l.lastWas3B2 = false;
   }
   saveState();
   renderLiveScoreboard();
@@ -1362,9 +1464,11 @@ function switchTurn() {
   const l = state.live;
   if (l.turn === 1) {
     l.run1 = 0;
+    l.lastWas3B1 = false;
     l.turn = 2;
   } else {
     l.run2 = 0;
+    l.lastWas3B2 = false;
     l.turn = 1;
     l.innings++;
   }
@@ -1379,28 +1483,45 @@ function adjustInnings(delta) {
 }
 
 function resetLiveMatch() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
+
   state.live.score1 = 0;
   state.live.run1 = 0;
   state.live.hr1 = 0;
   state.live.tb1 = 0;
+  state.live.lastWas3B1 = false;
+
   state.live.score2 = 0;
   state.live.run2 = 0;
   state.live.hr2 = 0;
   state.live.tb2 = 0;
+  state.live.lastWas3B2 = false;
+
   state.live.innings = 1;
   state.live.turn = 1;
+
+  // Reiniciar fecha, hora y cronómetro
+  state.live.date = now.toISOString().split("T")[0];
+  state.live.startTime = `${hh}:${mm}`;
+  state.live.startTimestamp = now.getTime();
+
   saveState();
   renderLiveScoreboard();
-  showToast("Marcador de mesa reiniciado.");
+  showToast("Marcador y tiempo de mesa reiniciados.");
 }
 
 function finishLiveMatchToRecord() {
   const l = state.live;
   const p1Ball = l.p1Ball || "blanca";
   cancelEditMatch();
+
   document.getElementById("form-modality").value = l.modality;
-  document.getElementById("form-date").value = new Date().toISOString().split("T")[0];
+  document.getElementById("form-date").value = l.date || new Date().toISOString().split("T")[0];
+  document.getElementById("form-time").value = l.startTime || "10:00";
   document.getElementById("form-innings").value = l.innings;
+  document.getElementById("form-minutes").value = getLiveDurationMinutes();
 
   if (p1Ball === "blanca") {
     document.getElementById("form-p1").value = l.p1;
@@ -1424,7 +1545,7 @@ function finishLiveMatchToRecord() {
 
   updateFormPreview();
   switchTab("new-match");
-  showToast("Datos cargados en el acta oficial.");
+  showToast("Datos y tiempos cargados en el acta oficial.");
 }
 // ==========================================
 // JUGADORES Y BACKUPS

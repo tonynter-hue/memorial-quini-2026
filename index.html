@@ -369,7 +369,7 @@
         </div>
       </section>
 
-      <!-- ==========================================
+ <!-- ==========================================
              2. PESTAÑA: MARCADOR EN VIVO
         =========================================== -->
       <section id="tab-live" class="tab-section hidden space-y-5">
@@ -384,10 +384,11 @@
                   type="button"
                   id="live-p1-ball-btn"
                   onclick="toggleP1Ball()"
-                  class="px-2 py-0.5 rounded bg-baize-900 border border-gold-500/80 text-[11px] font-bold text-gold-400 hover:bg-baize-800 transition-all cursor-pointer"
-                  title="Pulsa para cambiar la bola del Jugador 1"
+                  class="px-2.5 py-0.5 rounded-lg bg-baize-900 border text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
+                  title="Pulsa para alternar bola entre Blanca y Amarilla"
                 >
-                  ⚪ Blanca
+                  <span id="live-p1-ball-dot" class="w-2.5 h-2.5 rounded-full inline-block"></span>
+                  <span id="live-p1-ball-text">Blanca</span>
                 </button>
               </div>
               <select
@@ -545,12 +546,14 @@
                   >
                 </div>
                 <div>
-                  <span class="text-[11px] uppercase text-amber-300/80 block"
+                  <span class="text-[11px] uppercase text-emerald-400/70 block"
                     >3 Bandas</span
                   >
                   <span
                     id="live-tb-p1"
-                    class="text-base font-bold font-mono text-amber-300"
+                    onclick="adjustLiveTB(1, -1)"
+                    title="Clic para restar 1 si hubo error"
+                    class="text-base font-bold font-mono text-amber-300 cursor-pointer hover:underline"
                     >0</span
                   >
                 </div>
@@ -594,12 +597,27 @@
                 id="live-target-display"
                 class="text-xs text-emerald-300/70 mt-1.5 font-mono"
               >
-                Distancia: 90 car.
+                Distancia: 90 car. | Límite: 100 ent.
               </p>
+
+              <!-- FECHA, HORA Y DURACIÓN DEL PARTIDO -->
+              <div class="mt-2.5 pt-2 border-t border-emerald-900/60 w-full space-y-1">
+                <div class="flex items-center justify-center gap-1.5 text-xs text-slate-300">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span id="live-display-date" class="font-mono text-slate-200">--/--/----</span>
+                  <span class="text-emerald-500">•</span>
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span id="live-display-time" class="font-mono text-slate-200">--:--</span>
+                </div>
+                <div class="flex items-center justify-center gap-1.5 text-xs">
+                  <span class="text-emerald-400/80 font-medium">Duración:</span>
+                  <span id="live-display-duration" class="font-mono font-bold text-gold-400 text-sm">0 min</span>
+                </div>
+              </div>
             </div>
 
             <div
-              class="my-4 w-full bg-baize-950/90 border border-gold-500/30 rounded-xl py-4 px-2"
+              class="my-3 w-full bg-baize-950/90 border border-gold-500/30 rounded-xl py-3 px-2"
             >
               <span
                 class="text-xs font-bold uppercase tracking-widest text-emerald-300/80 block"
@@ -724,12 +742,14 @@
                   >
                 </div>
                 <div>
-                  <span class="text-[11px] uppercase text-amber-300/80 block"
+                  <span class="text-[11px] uppercase text-emerald-400/70 block"
                     >3 Bandas</span
                   >
                   <span
                     id="live-tb-p2"
-                    class="text-base font-bold font-mono text-amber-300"
+                    onclick="adjustLiveTB(2, -1)"
+                    title="Clic para restar 1 si hubo error"
+                    class="text-base font-bold font-mono text-amber-300 cursor-pointer hover:underline"
                     >0</span
                   >
                 </div>
