@@ -220,11 +220,11 @@ body {
 }
 
 /* ========================================================
-   CAJAS DE PUNTUACIÓN BASE (PC / WEB / TABLET)
+   CAJAS DE PUNTUACIÓN BASE (PC / PANTALLA CLUB / SMART TV)
    ======================================================== */
 #live-score-box-1,
 #live-score-box-2 {
-  min-height: 190px !important;
+  min-height: 250px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -232,26 +232,30 @@ body {
 
 #live-score-p1,
 #live-score-p2 {
-  font-size: 6.5rem !important;
+  font-size: clamp(6.5rem, 11vw, 10.5rem) !important;
   font-weight: 900 !important;
-  line-height: 0.9 !important;
+  line-height: 0.85 !important;
   letter-spacing: -0.04em !important;
 }
 
 /* ========================================================
    MODO MARCADOR ELECTRÓNICO HORIZONTAL (MÓVIL EN DIRECTO)
-   Estilo EZ Scoreboard: Sin scroll, pantalla completa y táctil
+   Cero scroll garantizado, máxima altura y números gigantes
    ======================================================== */
 @media (orientation: landscape) and (max-height: 550px) {
-  /* 1. Ocultar cabeceras y barras para aprovechar el 100% del móvil */
+  /* 1. Ocultar cabeceras y elementos prescindibles en directo */
   #main-header,
-  #tab-live > div.felt-card:first-child {
+  #tab-live > div.felt-card:first-child,
+  #live-target-display,
+  #live-badge-modality,
+  #live-timing-header-row {
     display: none !important;
   }
 
   html, body {
     overflow: hidden !important;
     height: 100vh !important;
+    height: 100dvh !important;
     width: 100vw !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -260,10 +264,12 @@ body {
   main {
     max-width: 100vw !important;
     height: 100vh !important;
-    padding: 3px 6px !important;
+    height: 100dvh !important;
+    padding: 2px 4px !important;
     margin: 0 !important;
     display: flex !important;
     flex-direction: column !important;
+    box-sizing: border-box !important;
   }
 
   #tab-live {
@@ -274,12 +280,12 @@ body {
     padding: 0 !important;
   }
 
-  /* 2. Distribución en 3 columnas fijas en una sola fila */
+  /* 2. Distribución en 3 columnas ajustadas */
   #tab-live > div.grid {
     display: grid !important;
-    grid-template-columns: 1fr 135px 1fr !important;
+    grid-template-columns: 1fr 125px 1fr !important;
     height: 100% !important;
-    gap: 6px !important;
+    gap: 4px !important;
     margin: 0 !important;
     align-items: stretch !important;
   }
@@ -287,16 +293,16 @@ body {
   /* 3. Tarjetas de los jugadores */
   #live-card-p1,
   #live-card-p2 {
-    padding: 5px 8px !important;
+    padding: 3px 6px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
     height: 100% !important;
     margin: 0 !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
+    box-sizing: border-box !important;
   }
 
-  /* Cabecera del jugador: Bola a la izquierda, Nombre completo a la derecha */
   #live-card-p1 .mb-2,
   #live-card-p2 .mb-2 {
     margin-bottom: 0 !important;
@@ -315,113 +321,109 @@ body {
   #live-score-box-1,
   #live-score-box-2 {
     min-height: unset !important;
-    margin: 2px 0 !important;
+    margin: 1px 0 !important;
     padding: 0 !important;
     flex: 1 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 16px !important;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.5) !important;
+    border-radius: 14px !important;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 6px 15px rgba(0,0,0,0.5) !important;
   }
 
-  /* Números hiper-grandes para verse a distancia */
+  /* Números que ocupan prácticamente toda la caja */
   #live-score-p1,
   #live-score-p2 {
-    font-size: 6.8rem !important;
-    line-height: 0.82 !important;
+    font-size: clamp(5.8rem, 25vh, 8.2rem) !important;
+    line-height: 0.8 !important;
     font-weight: 900 !important;
     letter-spacing: -0.05em !important;
     margin: 0 !important;
   }
 
-  /* Fila de Estadísticas compacta pegada justo encima de los botones */
+  /* Fila de Estadísticas compacta */
   #live-card-p1 .grid-cols-4.bg-baize-950\/90,
   #live-card-p2 .grid-cols-4.bg-baize-950\/90 {
-    margin-bottom: 3px !important;
-    padding: 2px 4px !important;
+    margin-bottom: 2px !important;
+    padding: 1px 3px !important;
+    border-radius: 6px !important;
   }
   #live-card-p1 .grid-cols-4.bg-baize-950\/90 span,
   #live-card-p2 .grid-cols-4.bg-baize-950\/90 span {
-    font-size: 0.62rem !important;
+    font-size: 0.58rem !important;
     line-height: 1 !important;
   }
   #live-card-p1 .grid-cols-4.bg-baize-950\/90 span.font-mono,
   #live-card-p2 .grid-cols-4.bg-baize-950\/90 span.font-mono {
-    font-size: 0.88rem !important;
+    font-size: 0.82rem !important;
     font-weight: 800 !important;
-    margin-top: 1px !important;
   }
 
-  /* Botonera de carambolas (+1, +2, -1) */
+  /* Botonera de carambolas táctil (+1, +2, -1) */
   #live-card-p1 .grid-cols-4:last-child,
   #live-card-p2 .grid-cols-4:last-child {
-    gap: 4px !important;
+    gap: 3px !important;
   }
   #live-card-p1 button,
   #live-card-p2 button {
-    padding: 0.45rem 0.2rem !important;
-    font-size: 0.82rem !important;
-    border-radius: 8px !important;
+    padding: 0.35rem 0.2rem !important;
+    font-size: 0.8rem !important;
+    border-radius: 6px !important;
   }
 
-  /* 4. Panel Central (Reloj, Entrada y Botón de Turno) */
+  /* 4. Panel Central Ultra-Compacto (evita que empuje el fondo de la pantalla) */
   #tab-live > div.grid > div:nth-child(2) {
-    padding: 4px 6px !important;
+    padding: 3px 4px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
     height: 100% !important;
     margin: 0 !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
+    box-sizing: border-box !important;
   }
 
-  #live-target-display,
-  #live-badge-modality,
-  #live-display-date {
-    display: none !important;
-  }
   #tab-live > div.grid > div:nth-child(2) .mt-2\.5 {
     margin-top: 0 !important;
     padding-top: 0 !important;
     border-top: none !important;
   }
   #live-timer-btn-container button {
-    padding: 3px 6px !important;
-    font-size: 0.68rem !important;
+    padding: 2px 4px !important;
+    font-size: 0.65rem !important;
   }
 
-  /* Caja de Entrada */
+  /* Entrada */
   #tab-live > div.grid > div:nth-child(2) .my-3 {
-    margin: 2px 0 !important;
-    padding: 3px 4px !important;
-    border-radius: 8px !important;
+    margin: 1px 0 !important;
+    padding: 2px !important;
+    border-radius: 6px !important;
   }
   #live-innings {
-    font-size: 2.7rem !important;
+    font-size: 2.2rem !important;
     line-height: 0.95 !important;
-    margin: 1px 0 !important;
+    margin: 0 !important;
   }
   #tab-live > div.grid > div:nth-child(2) .my-3 button {
-    padding: 2px 6px !important;
-    font-size: 0.65rem !important;
+    padding: 1px 4px !important;
+    font-size: 0.62rem !important;
   }
 
   /* Botones inferiores centrales */
   #tab-live > div.grid > div:nth-child(2) .space-y-2\.5 {
     display: flex !important;
     flex-direction: column !important;
-    gap: 4px !important;
+    gap: 3px !important;
   }
   #tab-live > div.grid > div:nth-child(2) button[onclick="switchTurn()"] {
-    padding: 0.5rem 0.25rem !important;
-    font-size: 0.78rem !important;
+    padding: 0.4rem 0.2rem !important;
+    font-size: 0.75rem !important;
     line-height: 1 !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
   }
   #tab-live > div.grid > div:nth-child(2) button[onclick="finishLiveMatchToRecord()"] {
-    padding: 0.25rem 0.2rem !important;
-    font-size: 0.65rem !important;
+    padding: 0.2rem 0.15rem !important;
+    font-size: 0.62rem !important;
     border-radius: 6px !important;
   }
 }

@@ -1321,6 +1321,8 @@ function renderLiveScoreboard() {
   const score1 = document.getElementById("live-score-p1");
   const score2 = document.getElementById("live-score-p2");
 
+  const scoreTextClasses = "text-7xl sm:text-8xl lg:text-[9.5rem] font-extrabold font-mono text-slate-950 leading-none select-none";
+
   if (p1Ball === "blanca") {
     if (dot1) dot1.className = "w-5 h-5 rounded-full ball-white inline-block shadow shrink-0";
     if (text1) {
@@ -1333,9 +1335,9 @@ function renderLiveScoreboard() {
       text2.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
     }
     if (box1) box1.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white shadow-2xl transition-all";
-    if (score1) score1.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
+    if (score1) score1.className = scoreTextClasses;
     if (box2) box2.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-400 shadow-2xl transition-all";
-    if (score2) score2.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
+    if (score2) score2.className = scoreTextClasses;
   } else {
     if (dot1) dot1.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow shrink-0";
     if (text1) {
@@ -1348,9 +1350,9 @@ function renderLiveScoreboard() {
       text2.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
     }
     if (box1) box1.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-400 shadow-2xl transition-all";
-    if (score1) score1.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
+    if (score1) score1.className = scoreTextClasses;
     if (box2) box2.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white shadow-2xl transition-all";
-    if (score2) score2.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
+    if (score2) score2.className = scoreTextClasses;
   }
 
   // Nombres y Puntuaciones
