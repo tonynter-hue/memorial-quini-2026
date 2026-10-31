@@ -1309,46 +1309,44 @@ function renderLiveScoreboard() {
     }
   }
 
-  // Indicadores de bola en las tarjetas
+  // Indicadores de bola en las cabeceras
   const dot1 = document.getElementById("live-ball-dot-1");
   const text1 = document.getElementById("live-ball-name-1");
   const dot2 = document.getElementById("live-ball-dot-2");
   const text2 = document.getElementById("live-ball-name-2");
 
-  // Cajas grandes de puntos: Fondo Blanco o Amarillo según bola, con números en negro
+  // Cajas grandes de puntos
   const box1 = document.getElementById("live-score-box-1");
   const box2 = document.getElementById("live-score-box-2");
   const score1 = document.getElementById("live-score-p1");
   const score2 = document.getElementById("live-score-p2");
 
   if (p1Ball === "blanca") {
-    if (dot1) dot1.className = "w-5 h-5 rounded-full ball-white inline-block shadow";
+    if (dot1) dot1.className = "w-5 h-5 rounded-full ball-white inline-block shadow shrink-0";
     if (text1) {
       text1.textContent = "Bola Blanca";
       text1.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
     }
-    if (dot2) dot2.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow";
+    if (dot2) dot2.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow shrink-0";
     if (text2) {
       text2.textContent = "Bola Amarilla";
       text2.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
     }
-    // Jugador 1: Fondo Blanco | Jugador 2: Fondo Amarillo
     if (box1) box1.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white shadow-2xl transition-all";
     if (score1) score1.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
     if (box2) box2.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-400 shadow-2xl transition-all";
     if (score2) score2.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
   } else {
-    if (dot1) dot1.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow";
+    if (dot1) dot1.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow shrink-0";
     if (text1) {
       text1.textContent = "Bola Amarilla";
       text1.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
     }
-    if (dot2) dot2.className = "w-5 h-5 rounded-full ball-white inline-block shadow";
+    if (dot2) dot2.className = "w-5 h-5 rounded-full ball-white inline-block shadow shrink-0";
     if (text2) {
       text2.textContent = "Bola Blanca";
       text2.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
     }
-    // Jugador 1: Fondo Amarillo | Jugador 2: Fondo Blanco
     if (box1) box1.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-400 shadow-2xl transition-all";
     if (score1) score1.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
     if (box2) box2.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white shadow-2xl transition-all";
@@ -1457,27 +1455,21 @@ function renderLiveScoreboard() {
     }
   }
 
-  // Resaltado de turno activo
+  // Resaltado de turno activo con contorno luminoso
   const c1 = document.getElementById("live-card-p1");
   const c2 = document.getElementById("live-card-p2");
-  const b1 = document.getElementById("live-turn-badge-1");
-  const b2 = document.getElementById("live-turn-badge-2");
 
-  if (c1 && c2 && b1 && b2) {
+  if (c1 && c2) {
     if (l.turn === 1) {
       c1.classList.add("active-turn-glow");
       c2.classList.remove("active-turn-glow");
-      b1.classList.remove("hidden");
-      b2.classList.add("hidden");
     } else {
       c2.classList.add("active-turn-glow");
       c1.classList.remove("active-turn-glow");
-      b2.classList.remove("hidden");
-      b1.classList.add("hidden");
     }
   }
 
-  // Refrescar cronómetro si la partida está en curso
+  // Refrescar cronómetro
   if (!liveTimerInterval) {
     liveTimerInterval = setInterval(() => {
       if (state.live && state.live.isStarted && !state.live.isFinished) {
@@ -1623,7 +1615,7 @@ function finishLiveMatchToRecord() {
     document.getElementById("form-p1").value = l.p2;
     document.getElementById("form-car1").value = l.score2;
     document.getElementById("form-sm1").value = l.hr2;
-    document.getElementById("form-tb1").value = l.tb2 || 0;
+    document.getElementById("form-tb2").value = l.tb2 || 0;
     document.getElementById("form-p2").value = l.p1;
     document.getElementById("form-car2").value = l.score1;
     document.getElementById("form-sm2").value = l.hr1;

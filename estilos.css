@@ -220,6 +220,25 @@ body {
 }
 
 /* ========================================================
+   CAJAS DE PUNTUACIÓN BASE (PC / WEB / TABLET)
+   ======================================================== */
+#live-score-box-1,
+#live-score-box-2 {
+  min-height: 190px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#live-score-p1,
+#live-score-p2 {
+  font-size: 6.5rem !important;
+  font-weight: 900 !important;
+  line-height: 0.9 !important;
+  letter-spacing: -0.04em !important;
+}
+
+/* ========================================================
    MODO MARCADOR ELECTRÓNICO HORIZONTAL (MÓVIL EN DIRECTO)
    Estilo EZ Scoreboard: Sin scroll, pantalla completa y táctil
    ======================================================== */
@@ -241,7 +260,7 @@ body {
   main {
     max-width: 100vw !important;
     height: 100vh !important;
-    padding: 4px 6px !important;
+    padding: 3px 6px !important;
     margin: 0 !important;
     display: flex !important;
     flex-direction: column !important;
@@ -258,7 +277,7 @@ body {
   /* 2. Distribución en 3 columnas fijas en una sola fila */
   #tab-live > div.grid {
     display: grid !important;
-    grid-template-columns: 1fr 140px 1fr !important;
+    grid-template-columns: 1fr 135px 1fr !important;
     height: 100% !important;
     gap: 6px !important;
     margin: 0 !important;
@@ -268,7 +287,7 @@ body {
   /* 3. Tarjetas de los jugadores */
   #live-card-p1,
   #live-card-p2 {
-    padding: 6px 8px !important;
+    padding: 5px 8px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
@@ -277,13 +296,7 @@ body {
     border-radius: 12px !important;
   }
 
-  /* Cabecera del jugador: Nombre + Bola + Turno */
-  #live-card-p1 > div:first-child,
-  #live-card-p2 > div:first-child {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-  }
+  /* Cabecera del jugador: Bola a la izquierda, Nombre completo a la derecha */
   #live-card-p1 .mb-2,
   #live-card-p2 .mb-2 {
     margin-bottom: 0 !important;
@@ -292,17 +305,18 @@ body {
   #live-name-p2 {
     font-size: 1.15rem !important;
     line-height: 1.1 !important;
-    max-width: 130px !important;
+    max-width: 180px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
   }
 
-  /* Gran Caja de Carambolas estilo Flip Box gigante */
+  /* Gran Caja de Carambolas en móvil landscape */
   #live-score-box-1,
   #live-score-box-2 {
-    margin: 3px 0 !important;
-    padding: 2px !important;
+    min-height: unset !important;
+    margin: 2px 0 !important;
+    padding: 0 !important;
     flex: 1 !important;
     display: flex !important;
     align-items: center !important;
@@ -311,12 +325,13 @@ body {
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.5) !important;
   }
 
+  /* Números hiper-grandes para verse a distancia */
   #live-score-p1,
   #live-score-p2 {
-    font-size: 5.6rem !important;
-    line-height: 0.9 !important;
+    font-size: 6.8rem !important;
+    line-height: 0.82 !important;
     font-weight: 900 !important;
-    letter-spacing: -0.03em !important;
+    letter-spacing: -0.05em !important;
     margin: 0 !important;
   }
 
