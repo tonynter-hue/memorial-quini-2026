@@ -600,8 +600,8 @@
                 Distancia: 90 car. | Límite: 100 ent.
               </p>
 
-              <!-- FECHA, HORA Y DURACIÓN DEL PARTIDO -->
-              <div class="mt-2.5 pt-2 border-t border-emerald-900/60 w-full space-y-1">
+              <!-- FECHA, HORA, DURACIÓN Y CONTROL START/FINISH -->
+              <div class="mt-2.5 pt-2 border-t border-emerald-900/60 w-full space-y-2">
                 <div class="flex items-center justify-center gap-1.5 text-xs text-slate-300">
                   <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
                   <span id="live-display-date" class="font-mono text-slate-200">--/--/----</span>
@@ -609,10 +609,15 @@
                   <i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-400"></i>
                   <span id="live-display-time" class="font-mono text-slate-200">--:--</span>
                 </div>
+
                 <div class="flex items-center justify-center gap-1.5 text-xs">
                   <span class="text-emerald-400/80 font-medium">Duración:</span>
                   <span id="live-display-duration" class="font-mono font-bold text-gold-400 text-sm">0 min</span>
+                  <span id="live-status-badge" class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">En espera</span>
                 </div>
+
+                <!-- Botón Start / Finish -->
+                <div id="live-timer-btn-container" class="pt-0.5"></div>
               </div>
             </div>
 

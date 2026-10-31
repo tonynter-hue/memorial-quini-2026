@@ -1219,27 +1219,42 @@ function deleteMatch(id) {
 // ==========================================
 let liveTimerInterval = null;
 
-function ensureLiveTiming() {
-  const l = state.live;
-  const now = new Date();
-  if (!l.date) {
-    l.date = now.toISOString().split("T")[0];
-  }
-  if (!l.startTime) {
-    const hh = String(now.getHours()).padStart(2, "0");
-    const mm = String(now.getMinutes()).padStart(2, "0");
-    l.startTime = `${hh}:${mm}`;
-  }
-  if (!l.startTimestamp) {
-    l.startTimestamp = now.getTime();
-  }
-}
-
 function getLiveDurationMinutes() {
-  ensureLiveTiming();
-  const start = state.live.startTimestamp || Date.now();
+  const l = state.live;
+  if (!l.isStarted) return 0;
+  if (l.isFinished && typeof l.frozenDuration === "number") {
+    return l.frozenDuration;
+  }
+  const start = l.startTimestamp || Date.now();
   const diffMs = Math.max(0, Date.now() - start);
   return Math.floor(diffMs / 60000);
+}
+
+function startLiveMatch() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
+
+  state.live.isStarted = true;
+  state.live.isFinished = false;
+  state.live.date = now.toISOString().split("T")[0];
+  state.live.startTime = `${hh}:${mm}`;
+  state.live.startTimestamp = now.getTime();
+  delete state.live.frozenDuration;
+
+  saveState();
+  renderLiveScoreboard();
+  showToast("¡Partida iniciada! Tiempo en marcha.");
+}
+
+function stopLiveMatch() {
+  if (!state.live.isStarted) return;
+  state.live.isFinished = true;
+  state.live.frozenDuration = getLiveDurationMinutes();
+
+  saveState();
+  renderLiveScoreboard();
+  showToast(`Partida finalizada. Tiempo registrado: ${state.live.frozenDuration} min.`);
 }
 
 function updateLiveSetup() {
@@ -1260,7 +1275,6 @@ function toggleP1Ball() {
 }
 
 function renderLiveScoreboard() {
-  ensureLiveTiming();
   const l = state.live;
   const p1Select = document.getElementById("live-p1-select");
   const p2Select = document.getElementById("live-p2-select");
@@ -1280,7 +1294,7 @@ function renderLiveScoreboard() {
   if (targetInput) targetInput.value = l.target;
   if (maxInnInput) maxInnInput.value = l.maxInnings;
 
-  // 1. Selector de bola: bola blanca = punto blanco y texto blanco; bola amarilla = punto amarillo y texto amarillo
+  // Selector de bola P1 (Blanca / Amarilla)
   if (btnP1Ball && dotP1Ball && textP1Ball) {
     if (p1Ball === "blanca") {
       btnP1Ball.className = "px-2.5 py-0.5 rounded-lg bg-baize-900 border border-slate-200 text-white font-bold transition-all cursor-pointer inline-flex items-center gap-1.5";
@@ -1362,20 +1376,71 @@ function renderLiveScoreboard() {
   if (badgeMod) badgeMod.textContent = l.modality;
   if (targetDisp) targetDisp.textContent = `Distancia: ${l.target} car. | Límite: ${l.maxInnings} ent.`;
 
-  // 3. Fecha, hora y duración en minutos
+  // Fecha, hora, duración y estado
   const dispDate = document.getElementById("live-display-date");
   const dispTime = document.getElementById("live-display-time");
   const dispDuration = document.getElementById("live-display-duration");
+  const badgeStatus = document.getElementById("live-status-badge");
+  const btnContainer = document.getElementById("live-timer-btn-container");
 
-  if (dispDate && l.date) {
-    const parts = l.date.split("-");
-    dispDate.textContent = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : l.date;
+  if (dispDate) {
+    if (l.date) {
+      const parts = l.date.split("-");
+      dispDate.textContent = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : l.date;
+    } else {
+      dispDate.textContent = "--/--/----";
+    }
   }
-  if (dispTime && l.startTime) {
-    dispTime.textContent = l.startTime;
+
+  if (dispTime) {
+    dispTime.textContent = l.startTime || "--:--";
   }
+
+  const durationMin = getLiveDurationMinutes();
   if (dispDuration) {
-    dispDuration.textContent = `${getLiveDurationMinutes()} min`;
+    dispDuration.textContent = `${durationMin} min`;
+  }
+
+  // Estado y botones Start/Finish
+  if (badgeStatus && btnContainer) {
+    if (!l.isStarted) {
+      badgeStatus.textContent = "En espera";
+      badgeStatus.className = "ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300";
+      btnContainer.innerHTML = `
+        <button
+          onclick="startLiveMatch()"
+          class="w-full py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow transition-all active:scale-95"
+        >
+          <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+          <span>Iniciar Partida (Start)</span>
+        </button>
+      `;
+    } else if (!l.isFinished) {
+      badgeStatus.textContent = "En juego";
+      badgeStatus.className = "ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-pulse";
+      btnContainer.innerHTML = `
+        <button
+          onclick="stopLiveMatch()"
+          class="w-full py-1.5 px-3 rounded-lg bg-rose-900/80 hover:bg-rose-800 text-rose-100 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 border border-rose-600/50 shadow transition-all active:scale-95"
+        >
+          <i data-lucide="square" class="w-3.5 h-3.5 fill-current"></i>
+          <span>Finalizar Tiempo (Stop)</span>
+        </button>
+      `;
+    } else {
+      badgeStatus.textContent = "Finalizada";
+      badgeStatus.className = "ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gold-500/20 text-gold-400 border border-gold-500/50";
+      btnContainer.innerHTML = `
+        <button
+          onclick="startLiveMatch()"
+          class="w-full py-1.5 px-3 rounded-lg bg-baize-900 hover:bg-baize-800 text-slate-300 font-semibold text-[11px] flex items-center justify-center gap-1 border border-emerald-800/60 transition-all"
+          title="Reanudar cronómetro si se detuvo por error"
+        >
+          <i data-lucide="rotate-ccw" class="w-3 h-3 text-gold-400"></i>
+          <span>Reanudar tiempo</span>
+        </button>
+      `;
+    }
   }
 
   // Resaltado de turno activo
@@ -1398,16 +1463,21 @@ function renderLiveScoreboard() {
     }
   }
 
-  // Temporizador para refrescar la duración en minutos automáticamente
+  // Refrescar cronómetro si la partida está en curso
   if (!liveTimerInterval) {
     liveTimerInterval = setInterval(() => {
-      const durEl = document.getElementById("live-display-duration");
-      if (durEl) durEl.textContent = `${getLiveDurationMinutes()} min`;
-    }, 30000);
+      if (state.live && state.live.isStarted && !state.live.isFinished) {
+        const durEl = document.getElementById("live-display-duration");
+        if (durEl) durEl.textContent = `${getLiveDurationMinutes()} min`;
+      }
+    }, 15000);
+  }
+
+  if (typeof lucide !== "undefined") {
+    lucide.createIcons();
   }
 }
 
-// 4. Sumar carambolas y corrección inteligente de 3 Bandas
 function addLiveCarom(player, delta, es3B = false) {
   const l = state.live;
   if (player === 1) {
@@ -1419,7 +1489,6 @@ function addLiveCarom(player, delta, es3B = false) {
     } else if (delta > 0) {
       l.lastWas3B1 = false;
     } else if (delta < 0) {
-      // Si el juez rectifica una de 3 bandas a 1 carambola y se pulsa -1
       if (l.lastWas3B1 && (l.tb1 || 0) > 0) {
         l.tb1 = Math.max(0, l.tb1 - 1);
         l.lastWas3B1 = false;
@@ -1446,7 +1515,6 @@ function addLiveCarom(player, delta, es3B = false) {
   renderLiveScoreboard();
 }
 
-// Corrección manual del contador 3B pulsando el número
 function adjustLiveTB(player, delta) {
   const l = state.live;
   if (player === 1) {
@@ -1483,10 +1551,6 @@ function adjustInnings(delta) {
 }
 
 function resetLiveMatch() {
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2, "0");
-  const mm = String(now.getMinutes()).padStart(2, "0");
-
   state.live.score1 = 0;
   state.live.run1 = 0;
   state.live.hr1 = 0;
@@ -1502,19 +1566,29 @@ function resetLiveMatch() {
   state.live.innings = 1;
   state.live.turn = 1;
 
-  // Reiniciar fecha, hora y cronómetro
-  state.live.date = now.toISOString().split("T")[0];
-  state.live.startTime = `${hh}:${mm}`;
-  state.live.startTimestamp = now.getTime();
+  state.live.isStarted = false;
+  state.live.isFinished = false;
+  delete state.live.date;
+  delete state.live.startTime;
+  delete state.live.startTimestamp;
+  delete state.live.frozenDuration;
 
   saveState();
   renderLiveScoreboard();
-  showToast("Marcador y tiempo de mesa reiniciados.");
+  showToast("Marcador restablecido. En espera de inicio.");
 }
 
 function finishLiveMatchToRecord() {
   const l = state.live;
   const p1Ball = l.p1Ball || "blanca";
+
+  // Si no se había pulsado Stop antes, congela los minutos actuales
+  if (l.isStarted && !l.isFinished) {
+    l.isFinished = true;
+    l.frozenDuration = getLiveDurationMinutes();
+    saveState();
+  }
+
   cancelEditMatch();
 
   document.getElementById("form-modality").value = l.modality;
@@ -1545,7 +1619,7 @@ function finishLiveMatchToRecord() {
 
   updateFormPreview();
   switchTab("new-match");
-  showToast("Datos y tiempos cargados en el acta oficial.");
+  showToast("Datos y duración cargados en el acta oficial.");
 }
 // ==========================================
 // JUGADORES Y BACKUPS
