@@ -220,136 +220,211 @@ body {
 }
 
 /* ========================================================
-   MODO MARCADOR ELECTRÓNICO HORIZONTAL (MÓVIL EN LANDSCAPE)
+   MODO MARCADOR ELECTRÓNICO HORIZONTAL (MÓVIL EN DIRECTO)
    Estilo EZ Scoreboard: Sin scroll, pantalla completa y táctil
    ======================================================== */
 @media (orientation: landscape) and (max-height: 550px) {
-  /* 1. Ocultar cabecera global para ganar toda la pantalla del móvil */
-  #main-header {
+  /* 1. Ocultar cabeceras y barras para aprovechar el 100% del móvil */
+  #main-header,
+  #tab-live > div.felt-card:first-child,
+  #tab-live #live-card-p1 span.text-xs.uppercase,
+  #tab-live #live-card-p2 span.text-xs.uppercase {
     display: none !important;
   }
 
-  /* 2. Ajustar contenedor principal al 100% de la ventana sin márgenes */
-  body {
+  html, body {
     overflow: hidden !important;
+    height: 100vh !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
+
   main {
     max-width: 100vw !important;
-    padding: 0.25rem 0.5rem !important;
     height: 100vh !important;
+    padding: 4px 6px !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   #tab-live {
     height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
-    gap: 0.25rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* 3. Ocultar la barra superior de selectores en directo para dejar solo el marcador */
-  #tab-live > div.felt-card:first-child {
-    display: none !important;
-  }
-
-  /* 4. Forzar el grid del marcador a 3 columnas fijas en una sola fila */
+  /* 2. Distribución en 3 columnas fijas en una sola fila */
   #tab-live > div.grid {
     display: grid !important;
     grid-template-columns: 1fr 140px 1fr !important;
     height: 100% !important;
-    gap: 0.5rem !important;
+    gap: 6px !important;
+    margin: 0 !important;
     align-items: stretch !important;
   }
 
-  /* Tarjetas de Jugador 1 y Jugador 2 */
+  /* 3. Tarjetas de los jugadores */
   #live-card-p1,
   #live-card-p2 {
-    padding: 0.5rem !important;
+    padding: 6px 8px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
     height: 100% !important;
     margin: 0 !important;
+    border-radius: 12px !important;
   }
 
-  /* Cabecera del jugador: nombre visible y chapa de bola */
-  #live-card-p1 h3,
-  #live-card-p2 h3 {
-    font-size: 1.15rem !important;
-    line-height: 1.2 !important;
-    margin-bottom: 0.15rem !important;
-  }
-
-  /* Caja central de puntos: tamaño gigante estilo marcador digital */
-  #live-card-p1 > div.my-6,
-  #live-card-p2 > div.my-6 {
-    margin: 0.25rem 0 !important;
-    padding: 0.4rem 0.6rem !important;
-    flex: 1 !important;
+  /* Cabecera del jugador: Nombre + Bola + Turno */
+  #live-card-p1 > div:first-child,
+  #live-card-p2 > div:first-child {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
   }
+  #live-card-p1 .mb-3,
+  #live-card-p2 .mb-3 {
+    margin-bottom: 0 !important;
+  }
+  #live-name-p1,
+  #live-name-p2 {
+    font-size: 1.05rem !important;
+    line-height: 1.1 !important;
+    max-width: 120px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Caja central de Puntuación (Gran número + Estadísticas abajo) */
+  #live-card-p1 > div.my-6,
+  #live-card-p2 > div.my-6 {
+    margin: 2px 0 !important;
+    padding: 4px 8px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    background: rgba(3, 19, 13, 0.95) !important;
+  }
 
   #live-score-p1,
   #live-score-p2 {
-    font-size: 4.5rem !important;
-    line-height: 1 !important;
+    font-size: 4.8rem !important;
+    line-height: 0.95 !important;
+    font-weight: 900 !important;
+    margin: 0 !important;
   }
 
-  /* Estadísticas debajo del número en modo compacto */
-  #live-card-p1 .space-y-1\.5,
-  #live-card-p2 .space-y-1\.5 {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.2rem 0.5rem !important;
-    text-align: right !important;
+  /* Barra de Estadísticas estilo marcador (SA, SM, Prom, 3B) */
+  #live-card-p1 .text-right.space-y-1\.5,
+  #live-card-p2 .text-right.space-y-1\.5 {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    margin-top: 2px !important;
+    padding-top: 3px !important;
+    border-top: 1px solid rgba(16, 185, 129, 0.25) !important;
+    text-align: center !important;
   }
-  #live-card-p1 .space-y-1\.5 > div,
-  #live-card-p2 .space-y-1\.5 > div {
+  #live-card-p1 .text-right.space-y-1\.5 > div,
+  #live-card-p2 .text-right.space-y-1\.5 > div {
     display: flex !important;
     flex-direction: column !important;
+    align-items: center !important;
   }
-  #live-card-p1 .space-y-1\.5 span,
-  #live-card-p2 .space-y-1\.5 span {
-    font-size: 0.72rem !important;
-    line-height: 1.1 !important;
+  #live-card-p1 .text-right.space-y-1\.5 span,
+  #live-card-p2 .text-right.space-y-1\.5 span {
+    font-size: 0.65rem !important;
+    line-height: 1 !important;
   }
-  #live-card-p1 .space-y-1\.5 span.font-mono,
-  #live-card-p2 .space-y-1\.5 span.font-mono {
-    font-size: 0.95rem !important;
+  #live-card-p1 .text-right.space-y-1\.5 span.font-mono,
+  #live-card-p2 .text-right.space-y-1\.5 span.font-mono {
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+    margin-top: 1px !important;
   }
 
-  /* Botonera de carambolas táctil y accesible */
+  /* Botonera de carambolas táctil (+1, +2, -1) */
   #live-card-p1 .grid-cols-4,
   #live-card-p2 .grid-cols-4 {
-    gap: 0.25rem !important;
+    gap: 4px !important;
+    margin-top: 2px !important;
   }
   #live-card-p1 button,
   #live-card-p2 button {
     padding: 0.45rem 0.2rem !important;
-    font-size: 0.85rem !important;
+    font-size: 0.82rem !important;
+    border-radius: 8px !important;
   }
 
-  /* Panel Central (Entrada, Reloj y Turno) */
+  /* 4. Panel Central (Reloj, Entrada y Botón de Turno) */
   #tab-live > div.grid > div:nth-child(2) {
-    padding: 0.4rem !important;
+    padding: 4px 6px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
     height: 100% !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+  }
+
+  /* Ocultar textos secundarios para dejar solo reloj y botón start */
+  #live-target-display,
+  #live-badge-modality {
+    display: none !important;
+  }
+  #tab-live > div.grid > div:nth-child(2) .mt-2\.5 {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+  }
+  #live-display-date {
+    display: none !important;
+  }
+  #live-timer-btn-container button {
+    padding: 3px 6px !important;
+    font-size: 0.68rem !important;
+  }
+
+  /* Caja de Entrada */
+  #tab-live > div.grid > div:nth-child(2) .my-3 {
+    margin: 2px 0 !important;
+    padding: 3px 4px !important;
+    border-radius: 8px !important;
   }
   #live-innings {
-    font-size: 3rem !important;
-    margin: 0 !important;
+    font-size: 2.7rem !important;
+    line-height: 0.95 !important;
+    margin: 1px 0 !important;
+  }
+  #tab-live > div.grid > div:nth-child(2) .my-3 button {
+    padding: 2px 6px !important;
+    font-size: 0.65rem !important;
+  }
+
+  /* Botones inferiores centrales */
+  #tab-live > div.grid > div:nth-child(2) .space-y-2\.5 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+  #tab-live > div.grid > div:nth-child(2) button[onclick="switchTurn()"] {
+    padding: 0.5rem 0.25rem !important;
+    font-size: 0.78rem !important;
     line-height: 1 !important;
+    border-radius: 8px !important;
   }
-  #tab-live > div.grid > div:nth-child(2) .my-3 {
-    margin: 0.2rem 0 !important;
-    padding: 0.25rem 0 !important;
-  }
-  #tab-live > div.grid > div:nth-child(2) button {
-    padding: 0.4rem 0.2rem !important;
-    font-size: 0.75rem !important;
+  #tab-live > div.grid > div:nth-child(2) button[onclick="finishLiveMatchToRecord()"] {
+    padding: 0.25rem 0.2rem !important;
+    font-size: 0.65rem !important;
+    border-radius: 6px !important;
   }
 }
