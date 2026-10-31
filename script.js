@@ -7,7 +7,7 @@ const firebaseConfig = {
   projectId: "memorial-quini-elcano",
   storageBucket: "memorial-quini-elcano.firebasestorage.app",
   messagingSenderId: "166426350048",
-  appId: "1:166426350048:web:9d9af0e329454a60f3db85"
+  appId: "1:166426350048:web:9d9af0e329454a60f3db85",
 };
 
 // Inicializar Firebase Firestore
@@ -61,7 +61,6 @@ let state = {
   },
 };
 
-
 // Comprueba si un partido es de Fase Final
 function isPlayoffRound(round) {
   if (!round) return false;
@@ -72,37 +71,45 @@ function isPlayoffRound(round) {
 // SINCRONIZACIÓN NUBE (FIRESTORE) Y LOCAL
 // ==========================================
 function initRealtimeSync() {
-  db.collection("torneo").doc("memorial_quini")
-    .onSnapshot((doc) => {
-      if (doc.exists) {
-        const cloudData = doc.data();
-        if (cloudData.matches) {
-          state.matches = cloudData.matches;
-          state.players = cloudData.players || DEFAULT_PLAYERS;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          renderStandings();
-          renderHistory();
+  db.collection("torneo")
+    .doc("memorial_quini")
+    .onSnapshot(
+      (doc) => {
+        if (doc.exists) {
+          const cloudData = doc.data();
+          if (cloudData.matches) {
+            state.matches = cloudData.matches;
+            state.players = cloudData.players || DEFAULT_PLAYERS;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            renderStandings();
+            renderHistory();
+          }
+        } else {
+          // Primera vez: sube las 30 partidas de datos.js a la nube
+          subirEstadoAFirebase();
         }
-      } else {
-        // Primera vez: sube las 30 partidas de datos.js a la nube
-        subirEstadoAFirebase();
-      }
-    }, (error) => {
-      console.warn("Conexión en modo local:", error);
-      loadStateFallback();
-    });
+      },
+      (error) => {
+        console.warn("Conexión en modo local:", error);
+        loadStateFallback();
+      },
+    );
 }
 
 function subirEstadoAFirebase() {
-  db.collection("torneo").doc("memorial_quini").set({
-    players: state.players,
-    matches: state.matches,
-    updatedAt: new Date().toISOString()
-  }).then(() => {
-    showToast("Datos sincronizados en la nube.");
-  }).catch((err) => {
-    console.error("Error al subir a Firestore:", err);
-  });
+  db.collection("torneo")
+    .doc("memorial_quini")
+    .set({
+      players: state.players,
+      matches: state.matches,
+      updatedAt: new Date().toISOString(),
+    })
+    .then(() => {
+      showToast("Datos sincronizados en la nube.");
+    })
+    .catch((err) => {
+      console.error("Error al subir a Firestore:", err);
+    });
 }
 
 function loadStateFallback() {
@@ -133,8 +140,12 @@ function saveState() {
 // NAVEGACIÓN ENTRE PESTAÑAS
 // ==========================================
 function switchTab(tabId) {
-  document.querySelectorAll(".tab-section").forEach((el) => el.classList.add("hidden"));
-  document.querySelectorAll(".nav-btn").forEach((el) => el.classList.remove("active"));
+  document
+    .querySelectorAll(".tab-section")
+    .forEach((el) => el.classList.add("hidden"));
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach((el) => el.classList.remove("active"));
 
   const targetTab = document.getElementById(`tab-${tabId}`);
   const targetBtn = document.getElementById(`tab-btn-${tabId}`);
@@ -158,11 +169,17 @@ function compararJugadoresOficial(a, b, matchesList, countG) {
   // 2º Duelo particular ÚNICAMENTE si hay exactamente 2 empatados a victorias
   if (countG[a.g] === 2) {
     const duel = matchesList.find(
-      (m) => (m.p1 === a.name && m.p2 === b.name) || (m.p1 === b.name && m.p2 === a.name)
+      (m) =>
+        (m.p1 === a.name && m.p2 === b.name) ||
+        (m.p1 === b.name && m.p2 === a.name),
     );
     if (duel) {
-      const aGano = (duel.p1 === a.name && duel.car1 > duel.car2) || (duel.p2 === a.name && duel.car2 > duel.car1);
-      const bGano = (duel.p1 === b.name && duel.car1 > duel.car2) || (duel.p2 === b.name && duel.car2 > duel.car1);
+      const aGano =
+        (duel.p1 === a.name && duel.car1 > duel.car2) ||
+        (duel.p2 === a.name && duel.car2 > duel.car1);
+      const bGano =
+        (duel.p1 === b.name && duel.car1 > duel.car2) ||
+        (duel.p2 === b.name && duel.car2 > duel.car1);
       if (aGano) return -1;
       if (bGano) return 1;
     }
@@ -202,43 +219,102 @@ function renderStandings() {
 
   // Los partidos de Fase Final (Play-Off) se aíslan de la tabla de liga regular
   const regularMatches = state.matches.filter(
-    (m) => (mod === "TODAS" || m.modality === mod) && !isPlayoffRound(m.round)
+    (m) => (mod === "TODAS" || m.modality === mod) && !isPlayoffRound(m.round),
   );
 
-  let clubCar = 0, clubEnt = 0, bestMP = 0, bestMPName = "—", bestSM = 0, bestSMName = "—";
+  let clubCar = 0,
+    clubEnt = 0,
+    bestMP = 0,
+    bestMPName = "—",
+    bestSM = 0,
+    bestSMName = "—";
 
   regularMatches.forEach((m) => {
-    if (!stats[m.p1]) stats[m.p1] = { name: m.p1, pj: 0, g: 0, p: 0, saldo: 0, car: 0, tb: 0, ent: 0, pg: 0, mp: 0, sm: 0 };
-    if (!stats[m.p2]) stats[m.p2] = { name: m.p2, pj: 0, g: 0, p: 0, saldo: 0, car: 0, tb: 0, ent: 0, pg: 0, mp: 0, sm: 0 };
+    if (!stats[m.p1])
+      stats[m.p1] = {
+        name: m.p1,
+        pj: 0,
+        g: 0,
+        p: 0,
+        saldo: 0,
+        car: 0,
+        tb: 0,
+        ent: 0,
+        pg: 0,
+        mp: 0,
+        sm: 0,
+      };
+    if (!stats[m.p2])
+      stats[m.p2] = {
+        name: m.p2,
+        pj: 0,
+        g: 0,
+        p: 0,
+        saldo: 0,
+        car: 0,
+        tb: 0,
+        ent: 0,
+        pg: 0,
+        mp: 0,
+        sm: 0,
+      };
 
-    const s1 = stats[m.p1], s2 = stats[m.p2];
-    const c1 = Number(m.car1), c2 = Number(m.car2), inn = Math.max(1, Number(m.innings));
-    const sm1 = Number(m.sm1 || 0), sm2 = Number(m.sm2 || 0);
-    const tb1 = Number(m.tb1 || 0), tb2 = Number(m.tb2 || 0);
+    const s1 = stats[m.p1],
+      s2 = stats[m.p2];
+    const c1 = Number(m.car1),
+      c2 = Number(m.car2),
+      inn = Math.max(1, Number(m.innings));
+    const sm1 = Number(m.sm1 || 0),
+      sm2 = Number(m.sm2 || 0);
+    const tb1 = Number(m.tb1 || 0),
+      tb2 = Number(m.tb2 || 0);
 
-    s1.pj++; s2.pj++;
-    s1.car += c1; s2.car += c2;
-    s1.tb += tb1; s2.tb += tb2;
-    s1.ent += inn; s2.ent += inn;
-    s1.saldo += c1 - c2; s2.saldo += c2 - c1;
+    s1.pj++;
+    s2.pj++;
+    s1.car += c1;
+    s2.car += c2;
+    s1.tb += tb1;
+    s2.tb += tb2;
+    s1.ent += inn;
+    s2.ent += inn;
+    s1.saldo += c1 - c2;
+    s2.saldo += c2 - c1;
 
     if (sm1 > s1.sm) s1.sm = sm1;
     if (sm2 > s2.sm) s2.sm = sm2;
 
-    const avg1 = c1 / inn, avg2 = c2 / inn;
+    const avg1 = c1 / inn,
+      avg2 = c2 / inn;
     if (avg1 > s1.mp) s1.mp = avg1;
     if (avg2 > s2.mp) s2.mp = avg2;
 
-    if (c1 > c2) { s1.g++; s2.p++; }
-    else if (c2 > c1) { s2.g++; s1.p++; }
+    if (c1 > c2) {
+      s1.g++;
+      s2.p++;
+    } else if (c2 > c1) {
+      s2.g++;
+      s1.p++;
+    }
 
     clubCar += c1 + c2;
     clubEnt += inn * 2;
 
-    if (avg1 > bestMP) { bestMP = avg1; bestMPName = m.p1; }
-    if (avg2 > bestMP) { bestMP = avg2; bestMPName = m.p2; }
-    if (sm1 > bestSM) { bestSM = sm1; bestSMName = m.p1; }
-    if (sm2 > bestSM) { bestSM = sm2; bestSMName = m.p2; }
+    if (avg1 > bestMP) {
+      bestMP = avg1;
+      bestMPName = m.p1;
+    }
+    if (avg2 > bestMP) {
+      bestMP = avg2;
+      bestMPName = m.p2;
+    }
+    if (sm1 > bestSM) {
+      bestSM = sm1;
+      bestSMName = m.p1;
+    }
+    if (sm2 > bestSM) {
+      bestSM = sm2;
+      bestSMName = m.p2;
+    }
   });
 
   const rows = Object.values(stats).map((s) => {
@@ -252,7 +328,8 @@ function renderStandings() {
   });
 
   rows.sort((a, b) => {
-    if (sortBy === "SALDO") return b.saldo - a.saldo || b.g - a.g || b.pg - a.pg;
+    if (sortBy === "SALDO")
+      return b.saldo - a.saldo || b.g - a.g || b.pg - a.pg;
     if (sortBy === "PG") return b.pg - a.pg || b.g - a.g || b.saldo - a.saldo;
     if (sortBy === "TB") return b.tb - a.tb || b.g - a.g || b.saldo - a.saldo;
     if (sortBy === "MP") return b.mp - a.mp || b.pg - a.pg;
@@ -274,8 +351,10 @@ function renderStandings() {
 
   if (kpiMatches) kpiMatches.textContent = regularMatches.length;
   if (kpiModLabel) kpiModLabel.textContent = `Modalidad: Libre (90 Carambolas)`;
-  if (kpiClubAvg) kpiClubAvg.textContent = (clubEnt > 0 ? clubCar / clubEnt : 0).toFixed(3);
-  if (kpiCarTotal) kpiCarTotal.textContent = `${clubCar} carambolas / ${clubEnt} entradas`;
+  if (kpiClubAvg)
+    kpiClubAvg.textContent = (clubEnt > 0 ? clubCar / clubEnt : 0).toFixed(3);
+  if (kpiCarTotal)
+    kpiCarTotal.textContent = `${clubCar} carambolas / ${clubEnt} entradas`;
   if (kpiBestMp) kpiBestMp.textContent = bestMP.toFixed(3);
   if (kpiBestMpPlayer) kpiBestMpPlayer.textContent = bestMPName;
   if (kpiBestSm) kpiBestSm.textContent = bestSM;
@@ -283,7 +362,10 @@ function renderStandings() {
 
   // Renderizar filas de la tabla con distinción visual para los 4 de Play-Off
   // 1. Cambiar el título de la columna en la cabecera (busca automáticamente la 6ª columna)
-  const thColumna6 = document.getElementById("th-dinamica") || document.querySelector("#tab-standings table thead tr th:nth-child(6)") || document.querySelector("table thead tr th:nth-child(6)");
+  const thColumna6 =
+    document.getElementById("th-dinamica") ||
+    document.querySelector("#tab-standings table thead tr th:nth-child(6)") ||
+    document.querySelector("table thead tr th:nth-child(6)");
   if (thColumna6) {
     if (sortBy === "PG") thColumna6.textContent = "PROM.";
     else if (sortBy === "SM") thColumna6.textContent = "S.M.";
@@ -316,7 +398,12 @@ function renderStandings() {
         } else {
           // Por defecto o por Ganados / Saldo
           datoStr = r.saldo > 0 ? `+${r.saldo}` : `${r.saldo}`;
-          datoColor = r.saldo > 0 ? "text-emerald-300 font-black" : r.saldo < 0 ? "text-rose-400 font-black" : "text-gold-400 font-bold";
+          datoColor =
+            r.saldo > 0
+              ? "text-emerald-300 font-black"
+              : r.saldo < 0
+                ? "text-rose-400 font-black"
+                : "text-gold-400 font-bold";
         }
 
         const isPlayoff = i < 4;
@@ -364,14 +451,30 @@ function renderPlayoffBracket(topRows) {
   const p4 = topRows[3] ? topRows[3].name : "4º Clasificado";
 
   // Buscar actas ya jugadas de Semifinal 1, Semifinal 2 y Final
-  const mSemi1 = state.matches.find((m) => m.round === "Semifinal 1 (1º vs 4º)");
-  const mSemi2 = state.matches.find((m) => m.round === "Semifinal 2 (2º vs 3º)");
+  const mSemi1 = state.matches.find(
+    (m) => m.round === "Semifinal 1 (1º vs 4º)",
+  );
+  const mSemi2 = state.matches.find(
+    (m) => m.round === "Semifinal 2 (2º vs 3º)",
+  );
   const mFinal = state.matches.find((m) => m.round === "Gran Final");
 
   // Ganadores de semifinales (si ya se jugaron)
-  let winnerSemi1 = mSemi1 ? (mSemi1.car1 > mSemi1.car2 ? mSemi1.p1 : mSemi1.p2) : "Vencedor Semi 1";
-  let winnerSemi2 = mSemi2 ? (mSemi2.car1 > mSemi2.car2 ? mSemi2.p1 : mSemi2.p2) : "Vencedor Semi 2";
-  let champion = mFinal ? (mFinal.car1 > mFinal.car2 ? mFinal.p1 : mFinal.p2) : null;
+  let winnerSemi1 = mSemi1
+    ? mSemi1.car1 > mSemi1.car2
+      ? mSemi1.p1
+      : mSemi1.p2
+    : "Vencedor Semi 1";
+  let winnerSemi2 = mSemi2
+    ? mSemi2.car1 > mSemi2.car2
+      ? mSemi2.p1
+      : mSemi2.p2
+    : "Vencedor Semi 2";
+  let champion = mFinal
+    ? mFinal.car1 > mFinal.car2
+      ? mFinal.p1
+      : mFinal.p2
+    : null;
 
   function formatMatchBox(title, j1, j2, match) {
     if (match) {
@@ -472,40 +575,48 @@ function verFichaJugador(nombre) {
 
   // Filtrar los partidos jugados por este socio
   const matchesJugador = state.matches.filter(
-    (m) => m.p1 === nombre || m.p2 === nombre
+    (m) => m.p1 === nombre || m.p2 === nombre,
   );
 
-  let pj = 0, g = 0, p = 0, car = 0, ent = 0, tb = 0, bestSM = 0;
+  let pj = 0,
+    g = 0,
+    p = 0,
+    car = 0,
+    ent = 0,
+    tb = 0,
+    bestSM = 0;
   const rivalesJugados = new Set();
 
-  const partidosHtml = matchesJugador.map((m) => {
-    const soyP1 = m.p1 === nombre;
-    const misCar = Number(soyP1 ? m.car1 : m.car2);
-    const susCar = Number(soyP1 ? m.car2 : m.car1);
-    const rival = soyP1 ? m.p2 : m.p1;
-    const inn = Math.max(1, Number(m.innings));
-    const miSM = Number(soyP1 ? m.sm1 : m.sm2) || 0;
-    const suSM = Number(soyP1 ? m.sm2 : m.sm1) || 0;
-    const miTB = Number(soyP1 ? m.tb1 : m.tb2) || 0;
-    const suTB = Number(soyP1 ? m.tb2 : m.tb1) || 0;
-    const gano = misCar > susCar;
+  const partidosHtml = matchesJugador
+    .map((m) => {
+      const soyP1 = m.p1 === nombre;
+      const misCar = Number(soyP1 ? m.car1 : m.car2);
+      const susCar = Number(soyP1 ? m.car2 : m.car1);
+      const rival = soyP1 ? m.p2 : m.p1;
+      const inn = Math.max(1, Number(m.innings));
+      const miSM = Number(soyP1 ? m.sm1 : m.sm2) || 0;
+      const suSM = Number(soyP1 ? m.sm2 : m.sm1) || 0;
+      const miTB = Number(soyP1 ? m.tb1 : m.tb2) || 0;
+      const suTB = Number(soyP1 ? m.tb2 : m.tb1) || 0;
+      const gano = misCar > susCar;
 
-    pj++;
-    if (gano) g++; else p++;
-    car += misCar;
-    ent += inn;
-    tb += miTB;
-    if (miSM > bestSM) bestSM = miSM;
-    if (!isPlayoffRound(m.round)) rivalesJugados.add(rival);
+      pj++;
+      if (gano) g++;
+      else p++;
+      car += misCar;
+      ent += inn;
+      tb += miTB;
+      if (miSM > bestSM) bestSM = miSM;
+      if (!isPlayoffRound(m.round)) rivalesJugados.add(rival);
 
-    const miAvg = (misCar / inn).toFixed(3);
-    const suAvg = (susCar / inn).toFixed(3);
-    const badgeColor = gano
-      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
-      : "bg-rose-500/20 text-rose-300 border-rose-500/50";
-    const badgeTexto = gano ? "Victoria" : "Derrota";
+      const miAvg = (misCar / inn).toFixed(3);
+      const suAvg = (susCar / inn).toFixed(3);
+      const badgeColor = gano
+        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
+        : "bg-rose-500/20 text-rose-300 border-rose-500/50";
+      const badgeTexto = gano ? "Victoria" : "Derrota";
 
-    return `
+      return `
       <div class="bg-baize-950/80 border border-emerald-800/60 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="space-y-1">
               <div class="flex items-center gap-2 text-[11px]">
@@ -527,7 +638,8 @@ function verFichaJugador(nombre) {
           </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   const pg = ent > 0 ? (car / ent).toFixed(3) : "0.000";
 
@@ -560,7 +672,7 @@ function verFichaJugador(nombre) {
 
   // Rivales pendientes en liga regular (los 11 compañeros de club restantes)
   const pendientes = state.players.filter(
-    (p) => p !== nombre && !rivalesJugados.has(p)
+    (p) => p !== nombre && !rivalesJugados.has(p),
   );
 
   document.getElementById("modal-jugador-pendientes").innerHTML =
@@ -568,7 +680,7 @@ function verFichaJugador(nombre) {
       ? pendientes
           .map(
             (p) =>
-              `<span class="px-2.5 py-1 rounded-lg bg-baize-950 border border-emerald-700/50 text-slate-300 text-xs font-semibold">${p}</span>`
+              `<span class="px-2.5 py-1 rounded-lg bg-baize-950 border border-emerald-700/50 text-slate-300 text-xs font-semibold">${p}</span>`,
           )
           .join("")
       : `<span class="text-xs text-emerald-400 font-bold">¡Ha jugado contra todos los socios en la primera vuelta!</span>`;
@@ -588,37 +700,97 @@ function cerrarFichaJugadorModal() {
 function generarTextoBoletinWhatsApp() {
   const stats = {};
   state.players.forEach((p) => {
-    stats[p] = { name: p, pj: 0, g: 0, p: 0, saldo: 0, car: 0, tb: 0, ent: 0, pg: 0, mp: 0, sm: 0, refCount: 0 };
+    stats[p] = {
+      name: p,
+      pj: 0,
+      g: 0,
+      p: 0,
+      saldo: 0,
+      car: 0,
+      tb: 0,
+      ent: 0,
+      pg: 0,
+      mp: 0,
+      sm: 0,
+      refCount: 0,
+    };
   });
 
-  let clubCar = 0, clubEnt = 0, fastestInnings = 999, fastestMatchDesc = "";
+  let clubCar = 0,
+    clubEnt = 0,
+    fastestInnings = 999,
+    fastestMatchDesc = "";
 
   const regularMatches = state.matches.filter((m) => !isPlayoffRound(m.round));
 
   regularMatches.forEach((m) => {
-    if (!stats[m.p1]) stats[m.p1] = { name: m.p1, pj: 0, g: 0, p: 0, saldo: 0, car: 0, tb: 0, ent: 0, pg: 0, mp: 0, sm: 0, refCount: 0 };
-    if (!stats[m.p2]) stats[m.p2] = { name: m.p2, pj: 0, g: 0, p: 0, saldo: 0, car: 0, tb: 0, ent: 0, pg: 0, mp: 0, sm: 0, refCount: 0 };
+    if (!stats[m.p1])
+      stats[m.p1] = {
+        name: m.p1,
+        pj: 0,
+        g: 0,
+        p: 0,
+        saldo: 0,
+        car: 0,
+        tb: 0,
+        ent: 0,
+        pg: 0,
+        mp: 0,
+        sm: 0,
+        refCount: 0,
+      };
+    if (!stats[m.p2])
+      stats[m.p2] = {
+        name: m.p2,
+        pj: 0,
+        g: 0,
+        p: 0,
+        saldo: 0,
+        car: 0,
+        tb: 0,
+        ent: 0,
+        pg: 0,
+        mp: 0,
+        sm: 0,
+        refCount: 0,
+      };
 
-    const s1 = stats[m.p1], s2 = stats[m.p2];
-    const c1 = Number(m.car1), c2 = Number(m.car2), inn = Math.max(1, Number(m.innings));
-    const sm1 = Number(m.sm1 || 0), sm2 = Number(m.sm2 || 0);
-    const tb1 = Number(m.tb1 || 0), tb2 = Number(m.tb2 || 0);
+    const s1 = stats[m.p1],
+      s2 = stats[m.p2];
+    const c1 = Number(m.car1),
+      c2 = Number(m.car2),
+      inn = Math.max(1, Number(m.innings));
+    const sm1 = Number(m.sm1 || 0),
+      sm2 = Number(m.sm2 || 0);
+    const tb1 = Number(m.tb1 || 0),
+      tb2 = Number(m.tb2 || 0);
 
-    s1.pj++; s2.pj++;
-    s1.car += c1; s2.car += c2;
-    s1.tb += tb1; s2.tb += tb2;
-    s1.ent += inn; s2.ent += inn;
-    s1.saldo += c1 - c2; s2.saldo += c2 - c1;
+    s1.pj++;
+    s2.pj++;
+    s1.car += c1;
+    s2.car += c2;
+    s1.tb += tb1;
+    s2.tb += tb2;
+    s1.ent += inn;
+    s2.ent += inn;
+    s1.saldo += c1 - c2;
+    s2.saldo += c2 - c1;
 
     if (sm1 > s1.sm) s1.sm = sm1;
     if (sm2 > s2.sm) s2.sm = sm2;
 
-    const avg1 = c1 / inn, avg2 = c2 / inn;
+    const avg1 = c1 / inn,
+      avg2 = c2 / inn;
     if (avg1 > s1.mp) s1.mp = avg1;
     if (avg2 > s2.mp) s2.mp = avg2;
 
-    if (c1 > c2) { s1.g++; s2.p++; }
-    else if (c2 > c1) { s2.g++; s1.p++; }
+    if (c1 > c2) {
+      s1.g++;
+      s2.p++;
+    } else if (c2 > c1) {
+      s2.g++;
+      s1.p++;
+    }
 
     clubCar += c1 + c2;
     clubEnt += inn * 2;
@@ -637,7 +809,9 @@ function generarTextoBoletinWhatsApp() {
   });
 
   const countG = {};
-  rows.forEach((r) => { countG[r.g] = (countG[r.g] || 0) + 1; });
+  rows.forEach((r) => {
+    countG[r.g] = (countG[r.g] || 0) + 1;
+  });
 
   // Mismo criterio de ordenación que la tabla
   rows.sort((a, b) => compararJugadoresOficial(a, b, regularMatches, countG));
@@ -667,7 +841,8 @@ function generarTextoBoletinWhatsApp() {
 
   txt += `\n⭐ *MEJORES MARCAS LIGA REGULAR:*\n`;
   if (mejorSM) txt += `• Serie Mayor: *${mejorSM.name}* (${mejorSM.sm})\n`;
-  if (mejorProm) txt += `• Mejor Promedio: *${mejorProm.name}* (${mejorProm.mp.toFixed(3)})\n`;
+  if (mejorProm)
+    txt += `• Mejor Promedio: *${mejorProm.name}* (${mejorProm.mp.toFixed(3)})\n`;
   if (fastestMatchDesc) txt += `• Partida Más Rápida: *${fastestMatchDesc}*\n`;
   if (maxArbitro && maxArbitro.refCount > 0) {
     txt += `• Árbitro Más Activo: *${maxArbitro.name}* (${maxArbitro.refCount} partidas)\n`;
@@ -702,7 +877,9 @@ function copiarTextoBoletin() {
   navigator.clipboard
     .writeText(textarea.value)
     .then(() => {
-      showToast("¡Boletín copiado al portapapeles! Listo para pegar en WhatsApp.");
+      showToast(
+        "¡Boletín copiado al portapapeles! Listo para pegar en WhatsApp.",
+      );
       cerrarBoletinModal();
     })
     .catch(() => {
@@ -725,7 +902,9 @@ function toggleAdminModal() {
     const input = document.getElementById("input-pin-admin");
     if (input) input.value = "";
     if (modal) modal.classList.remove("hidden");
-    setTimeout(() => { if (input) input.focus(); }, 150);
+    setTimeout(() => {
+      if (input) input.focus();
+    }, 150);
   }
 }
 
@@ -767,17 +946,21 @@ function actualizarEstadoAdminUI() {
 // REGISTRAR Y EDITAR ACTAS
 // ==========================================
 function populatePlayerSelects() {
-  ["live-p1-select", "live-p2-select", "form-p1", "form-p2"].forEach((id, idx) => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    const current = sel.value;
-    sel.innerHTML = state.players.map((p) => `<option value="${p}">${p}</option>`).join("");
-    if (current && state.players.includes(current)) {
-      sel.value = current;
-    } else if (state.players[idx % 2]) {
-      sel.value = state.players[idx % 2];
-    }
-  });
+  ["live-p1-select", "live-p2-select", "form-p1", "form-p2"].forEach(
+    (id, idx) => {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      const current = sel.value;
+      sel.innerHTML = state.players
+        .map((p) => `<option value="${p}">${p}</option>`)
+        .join("");
+      if (current && state.players.includes(current)) {
+        sel.value = current;
+      } else if (state.players[idx % 2]) {
+        sel.value = state.players[idx % 2];
+      }
+    },
+  );
 
   const refereeSel = document.getElementById("form-referee");
   const assistantSel = document.getElementById("form-assistant");
@@ -785,7 +968,9 @@ function populatePlayerSelects() {
     const refCurrent = refereeSel.value;
     const astCurrent = assistantSel.value;
 
-    const optionsHtml = `<option value="">— Ninguno —</option>` + state.players.map((p) => `<option value="${p}">${p}</option>`).join("");
+    const optionsHtml =
+      `<option value="">— Ninguno —</option>` +
+      state.players.map((p) => `<option value="${p}">${p}</option>`).join("");
     refereeSel.innerHTML = optionsHtml;
     assistantSel.innerHTML = optionsHtml;
 
@@ -842,7 +1027,8 @@ function editMatch(id) {
 
   document.getElementById("edit-mode-banner").classList.remove("hidden");
   document.getElementById("form-match-title").textContent = "Editar Acta";
-  document.getElementById("form-submit-label").textContent = "Actualizar Acta y Recalcular";
+  document.getElementById("form-submit-label").textContent =
+    "Actualizar Acta y Recalcular";
   document.getElementById("nav-label-acta").textContent = "Editando Acta...";
 
   switchTab("new-match");
@@ -852,10 +1038,14 @@ function cancelEditMatch() {
   state.editingMatchId = null;
   const banner = document.getElementById("edit-mode-banner");
   if (banner) banner.classList.add("hidden");
-  document.getElementById("form-match-title").textContent = "Acta Oficial de Partido";
-  document.getElementById("form-submit-label").textContent = "Guardar Acta Oficial";
+  document.getElementById("form-match-title").textContent =
+    "Acta Oficial de Partido";
+  document.getElementById("form-submit-label").textContent =
+    "Guardar Acta Oficial";
   document.getElementById("nav-label-acta").textContent = "Registrar Acta";
-  document.getElementById("form-date").value = new Date().toISOString().split("T")[0];
+  document.getElementById("form-date").value = new Date()
+    .toISOString()
+    .split("T")[0];
 }
 
 function saveMatchRecord(e) {
@@ -864,7 +1054,9 @@ function saveMatchRecord(e) {
   // Comprobación de seguridad: exige PIN
   if (!isAdmin) {
     toggleAdminModal();
-    alert("Debes identificarte con el PIN de administrador para guardar actas.");
+    alert(
+      "Debes identificarte con el PIN de administrador para guardar actas.",
+    );
     return;
   }
 
@@ -939,7 +1131,9 @@ function renderHistory() {
   const container = document.getElementById("history-list");
   if (!container) return;
 
-  const list = state.matches.filter((m) => mod === "TODAS" || m.modality === mod);
+  const list = state.matches.filter(
+    (m) => mod === "TODAS" || m.modality === mod,
+  );
 
   if (list.length === 0) {
     container.innerHTML = `<div class="felt-card rounded-xl p-8 text-center text-emerald-300/70 text-sm">No hay actas registradas para este filtro.</div>`;
@@ -1006,7 +1200,12 @@ function deleteMatch(id) {
     alert("Solo el administrador con PIN puede eliminar actas.");
     return;
   }
-  if (!confirm("¿Seguro que quieres eliminar esta acta? La clasificación se recalculará automáticamente.")) return;
+  if (
+    !confirm(
+      "¿Seguro que quieres eliminar esta acta? La clasificación se recalculará automáticamente.",
+    )
+  )
+    return;
   state.matches = state.matches.filter((m) => m.id !== id);
   saveState();
   subirEstadoAFirebase();
@@ -1028,6 +1227,14 @@ function updateLiveSetup() {
   renderLiveScoreboard();
 }
 
+function changeLiveP1Ball() {
+  const ballSelect = document.getElementById("live-p1-ball");
+  if (!ballSelect) return;
+  state.live.p1Ball = ballSelect.value;
+  saveState();
+  renderLiveScoreboard();
+}
+
 function renderLiveScoreboard() {
   const l = state.live;
   const p1Select = document.getElementById("live-p1-select");
@@ -1035,12 +1242,50 @@ function renderLiveScoreboard() {
   const modSelect = document.getElementById("live-modality");
   const targetInput = document.getElementById("live-target");
   const maxInnInput = document.getElementById("live-max-innings");
+  const ballSelect = document.getElementById("live-p1-ball");
+  const p2BallBadge = document.getElementById("live-p2-ball-badge");
+
+  const p1Ball = l.p1Ball || "blanca";
 
   if (p1Select) p1Select.value = l.p1;
   if (p2Select) p2Select.value = l.p2;
   if (modSelect) modSelect.value = l.modality;
   if (targetInput) targetInput.value = l.target;
   if (maxInnInput) maxInnInput.value = l.maxInnings;
+  if (ballSelect) ballSelect.value = p1Ball;
+  if (p2BallBadge) {
+    p2BallBadge.innerHTML = p1Ball === "blanca" ? "🟡 Amarilla" : "⚪ Blanca";
+  }
+
+  // Actualizar indicadores visuales de bola en las tarjetas
+  const dot1 = document.getElementById("live-ball-dot-1");
+  const text1 = document.getElementById("live-ball-name-1");
+  const dot2 = document.getElementById("live-ball-dot-2");
+  const text2 = document.getElementById("live-ball-name-2");
+
+  if (p1Ball === "blanca") {
+    if (dot1) dot1.className = "w-6 h-6 rounded-full ball-white inline-block";
+    if (text1) {
+      text1.textContent = "Bola Blanca";
+      text1.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
+    }
+    if (dot2) dot2.className = "w-6 h-6 rounded-full ball-yellow inline-block";
+    if (text2) {
+      text2.textContent = "Bola Amarilla";
+      text2.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
+    }
+  } else {
+    if (dot1) dot1.className = "w-6 h-6 rounded-full ball-yellow inline-block";
+    if (text1) {
+      text1.textContent = "Bola Amarilla";
+      text1.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
+    }
+    if (dot2) dot2.className = "w-6 h-6 rounded-full ball-white inline-block";
+    if (text2) {
+      text2.textContent = "Bola Blanca";
+      text2.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
+    }
+  }
 
   const nameP1 = document.getElementById("live-name-p1");
   const nameP2 = document.getElementById("live-name-p2");
@@ -1148,23 +1393,38 @@ function resetLiveMatch() {
 
 function finishLiveMatchToRecord() {
   const l = state.live;
+  const p1Ball = l.p1Ball || "blanca";
   cancelEditMatch();
   document.getElementById("form-modality").value = l.modality;
   document.getElementById("form-date").value = new Date().toISOString().split("T")[0];
   document.getElementById("form-innings").value = l.innings;
-  document.getElementById("form-p1").value = l.p1;
-  document.getElementById("form-car1").value = l.score1;
-  document.getElementById("form-sm1").value = l.hr1;
-  document.getElementById("form-tb1").value = l.tb1 || 0;
-  document.getElementById("form-p2").value = l.p2;
-  document.getElementById("form-car2").value = l.score2;
-  document.getElementById("form-sm2").value = l.hr2;
-  document.getElementById("form-tb2").value = l.tb2 || 0;
+
+  // Si Jugador 1 jugó con bola blanca, se mantiene P1=Blanca y P2=Amarilla en el acta
+  if (p1Ball === "blanca") {
+    document.getElementById("form-p1").value = l.p1;
+    document.getElementById("form-car1").value = l.score1;
+    document.getElementById("form-sm1").value = l.hr1;
+    document.getElementById("form-tb1").value = l.tb1 || 0;
+    document.getElementById("form-p2").value = l.p2;
+    document.getElementById("form-car2").value = l.score2;
+    document.getElementById("form-sm2").value = l.hr2;
+    document.getElementById("form-tb2").value = l.tb2 || 0;
+  } else {
+    // Si Jugador 1 eligió amarilla, Jugador 2 pasa a la casilla de Bola Blanca del acta
+    document.getElementById("form-p1").value = l.p2;
+    document.getElementById("form-car1").value = l.score2;
+    document.getElementById("form-sm1").value = l.hr2;
+    document.getElementById("form-tb1").value = l.tb2 || 0;
+    document.getElementById("form-p2").value = l.p1;
+    document.getElementById("form-car2").value = l.score1;
+    document.getElementById("form-sm2").value = l.hr1;
+    document.getElementById("form-tb2").value = l.tb1 || 0;
+  }
+
   updateFormPreview();
   switchTab("new-match");
-  showToast("Datos cargados en el acta. Revisa y pulsa Guardar.");
+  showToast("Datos cargados en el acta oficial respetando las bolas asignadas.");
 }
-
 // ==========================================
 // JUGADORES Y BACKUPS
 // ==========================================
@@ -1178,7 +1438,7 @@ function renderPlayers() {
             <span class="text-base font-bold text-white">${p}</span>
             <button onclick="removePlayer('${p}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold px-2 py-1 rounded bg-rose-950/40">Eliminar</button>
         </div>
-      `
+      `,
     )
     .join("");
 }
@@ -1216,7 +1476,9 @@ function removePlayer(name) {
 
   const hasMatches = state.matches.some((m) => m.p1 === name || m.p2 === name);
   if (hasMatches) {
-    alert(`No puedes eliminar a "${name}" porque ya tiene partidas registradas.`);
+    alert(
+      `No puedes eliminar a "${name}" porque ya tiene partidas registradas.`,
+    );
     return;
   }
 
@@ -1252,7 +1514,9 @@ function downloadDatosJS() {
   a.href = URL.createObjectURL(blob);
   a.download = "datos.js";
   a.click();
-  showToast("Descargado 'datos.js'. Cópialo en tu carpeta Web_billar reemplazando el viejo.");
+  showToast(
+    "Descargado 'datos.js'. Cópialo en tu carpeta Web_billar reemplazando el viejo.",
+  );
 }
 
 function restoreBackupJSON(event) {
@@ -1278,7 +1542,10 @@ function restoreBackupJSON(event) {
 }
 
 function resetDemoData() {
-  if (!confirm("¿Deseas reiniciar los datos locales a los valores por defecto?")) return;
+  if (
+    !confirm("¿Deseas reiniciar los datos locales a los valores por defecto?")
+  )
+    return;
   localStorage.removeItem(STORAGE_KEY);
   loadState();
   populatePlayerSelects();
@@ -1296,7 +1563,7 @@ function showToast(msg) {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadStateFallback(); // Carga rápida inicial desde la memoria local
-  initRealtimeSync();  // Conecta la escucha en tiempo real con Firebase Firestore
+  initRealtimeSync(); // Conecta la escucha en tiempo real con Firebase Firestore
   populatePlayerSelects();
   const dateInput = document.getElementById("form-date");
   if (dateInput) dateInput.value = new Date().toISOString().split("T")[0];
