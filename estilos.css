@@ -226,9 +226,7 @@ body {
 @media (orientation: landscape) and (max-height: 550px) {
   /* 1. Ocultar cabeceras y barras para aprovechar el 100% del móvil */
   #main-header,
-  #tab-live > div.felt-card:first-child,
-  #tab-live #live-card-p1 span.text-xs.uppercase,
-  #tab-live #live-card-p2 span.text-xs.uppercase {
+  #tab-live > div.felt-card:first-child {
     display: none !important;
   }
 
@@ -286,77 +284,64 @@ body {
     align-items: center !important;
     justify-content: space-between !important;
   }
-  #live-card-p1 .mb-3,
-  #live-card-p2 .mb-3 {
+  #live-card-p1 .mb-2,
+  #live-card-p2 .mb-2 {
     margin-bottom: 0 !important;
   }
   #live-name-p1,
   #live-name-p2 {
-    font-size: 1.05rem !important;
+    font-size: 1.15rem !important;
     line-height: 1.1 !important;
-    max-width: 120px !important;
+    max-width: 130px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
   }
 
-  /* Caja central de Puntuación (Gran número + Estadísticas abajo) */
-  #live-card-p1 > div.my-6,
-  #live-card-p2 > div.my-6 {
-    margin: 2px 0 !important;
-    padding: 4px 8px !important;
+  /* Gran Caja de Carambolas estilo Flip Box gigante */
+  #live-score-box-1,
+  #live-score-box-2 {
+    margin: 3px 0 !important;
+    padding: 2px !important;
     flex: 1 !important;
     display: flex !important;
-    flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 10px !important;
-    background: rgba(3, 19, 13, 0.95) !important;
+    border-radius: 16px !important;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.5) !important;
   }
 
   #live-score-p1,
   #live-score-p2 {
-    font-size: 4.8rem !important;
-    line-height: 0.95 !important;
+    font-size: 5.6rem !important;
+    line-height: 0.9 !important;
     font-weight: 900 !important;
+    letter-spacing: -0.03em !important;
     margin: 0 !important;
   }
 
-  /* Barra de Estadísticas estilo marcador (SA, SM, Prom, 3B) */
-  #live-card-p1 .text-right.space-y-1\.5,
-  #live-card-p2 .text-right.space-y-1\.5 {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    margin-top: 2px !important;
-    padding-top: 3px !important;
-    border-top: 1px solid rgba(16, 185, 129, 0.25) !important;
-    text-align: center !important;
+  /* Fila de Estadísticas compacta pegada justo encima de los botones */
+  #live-card-p1 .grid-cols-4.bg-baize-950\/90,
+  #live-card-p2 .grid-cols-4.bg-baize-950\/90 {
+    margin-bottom: 3px !important;
+    padding: 2px 4px !important;
   }
-  #live-card-p1 .text-right.space-y-1\.5 > div,
-  #live-card-p2 .text-right.space-y-1\.5 > div {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-  #live-card-p1 .text-right.space-y-1\.5 span,
-  #live-card-p2 .text-right.space-y-1\.5 span {
-    font-size: 0.65rem !important;
+  #live-card-p1 .grid-cols-4.bg-baize-950\/90 span,
+  #live-card-p2 .grid-cols-4.bg-baize-950\/90 span {
+    font-size: 0.62rem !important;
     line-height: 1 !important;
   }
-  #live-card-p1 .text-right.space-y-1\.5 span.font-mono,
-  #live-card-p2 .text-right.space-y-1\.5 span.font-mono {
-    font-size: 0.85rem !important;
+  #live-card-p1 .grid-cols-4.bg-baize-950\/90 span.font-mono,
+  #live-card-p2 .grid-cols-4.bg-baize-950\/90 span.font-mono {
+    font-size: 0.88rem !important;
     font-weight: 800 !important;
     margin-top: 1px !important;
   }
 
-  /* Botonera de carambolas táctil (+1, +2, -1) */
-  #live-card-p1 .grid-cols-4,
-  #live-card-p2 .grid-cols-4 {
+  /* Botonera de carambolas (+1, +2, -1) */
+  #live-card-p1 .grid-cols-4:last-child,
+  #live-card-p2 .grid-cols-4:last-child {
     gap: 4px !important;
-    margin-top: 2px !important;
   }
   #live-card-p1 button,
   #live-card-p2 button {
@@ -376,18 +361,15 @@ body {
     border-radius: 12px !important;
   }
 
-  /* Ocultar textos secundarios para dejar solo reloj y botón start */
   #live-target-display,
-  #live-badge-modality {
+  #live-badge-modality,
+  #live-display-date {
     display: none !important;
   }
   #tab-live > div.grid > div:nth-child(2) .mt-2\.5 {
     margin-top: 0 !important;
     padding-top: 0 !important;
     border-top: none !important;
-  }
-  #live-display-date {
-    display: none !important;
   }
   #live-timer-btn-container button {
     padding: 3px 6px !important;

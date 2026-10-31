@@ -1315,35 +1315,49 @@ function renderLiveScoreboard() {
   const dot2 = document.getElementById("live-ball-dot-2");
   const text2 = document.getElementById("live-ball-name-2");
 
+  // Cajas grandes de puntos: Fondo Blanco o Amarillo según bola, con números en negro
+  const box1 = document.getElementById("live-score-box-1");
+  const box2 = document.getElementById("live-score-box-2");
+  const score1 = document.getElementById("live-score-p1");
+  const score2 = document.getElementById("live-score-p2");
+
   if (p1Ball === "blanca") {
-    if (dot1) dot1.className = "w-6 h-6 rounded-full ball-white inline-block";
+    if (dot1) dot1.className = "w-5 h-5 rounded-full ball-white inline-block shadow";
     if (text1) {
       text1.textContent = "Bola Blanca";
       text1.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
     }
-    if (dot2) dot2.className = "w-6 h-6 rounded-full ball-yellow inline-block";
+    if (dot2) dot2.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow";
     if (text2) {
       text2.textContent = "Bola Amarilla";
       text2.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
     }
+    // Jugador 1: Fondo Blanco | Jugador 2: Fondo Amarillo
+    if (box1) box1.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white shadow-2xl transition-all";
+    if (score1) score1.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
+    if (box2) box2.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-400 shadow-2xl transition-all";
+    if (score2) score2.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
   } else {
-    if (dot1) dot1.className = "w-6 h-6 rounded-full ball-yellow inline-block";
+    if (dot1) dot1.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow";
     if (text1) {
       text1.textContent = "Bola Amarilla";
       text1.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
     }
-    if (dot2) dot2.className = "w-6 h-6 rounded-full ball-white inline-block";
+    if (dot2) dot2.className = "w-5 h-5 rounded-full ball-white inline-block shadow";
     if (text2) {
       text2.textContent = "Bola Blanca";
       text2.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
     }
+    // Jugador 1: Fondo Amarillo | Jugador 2: Fondo Blanco
+    if (box1) box1.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-400 shadow-2xl transition-all";
+    if (score1) score1.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
+    if (box2) box2.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white shadow-2xl transition-all";
+    if (score2) score2.className = "font-extrabold font-mono text-slate-950 leading-none select-none";
   }
 
   // Nombres y Puntuaciones
   const nameP1 = document.getElementById("live-name-p1");
   const nameP2 = document.getElementById("live-name-p2");
-  const scoreP1 = document.getElementById("live-score-p1");
-  const scoreP2 = document.getElementById("live-score-p2");
   const runP1 = document.getElementById("live-run-p1");
   const runP2 = document.getElementById("live-run-p2");
   const hrP1 = document.getElementById("live-hr-p1");
@@ -1354,8 +1368,8 @@ function renderLiveScoreboard() {
 
   if (nameP1) nameP1.textContent = l.p1;
   if (nameP2) nameP2.textContent = l.p2;
-  if (scoreP1) scoreP1.textContent = l.score1;
-  if (scoreP2) scoreP2.textContent = l.score2;
+  if (score1) score1.textContent = l.score1;
+  if (score2) score2.textContent = l.score2;
   if (runP1) runP1.textContent = l.run1;
   if (runP2) runP2.textContent = l.run2;
   if (hrP1) hrP1.textContent = l.hr1;
@@ -1582,7 +1596,6 @@ function finishLiveMatchToRecord() {
   const l = state.live;
   const p1Ball = l.p1Ball || "blanca";
 
-  // Si no se había pulsado Stop antes, congela los minutos actuales
   if (l.isStarted && !l.isFinished) {
     l.isFinished = true;
     l.frozenDuration = getLiveDurationMinutes();

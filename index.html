@@ -470,14 +470,14 @@
           <!-- JUGADOR 1 -->
           <div
             id="live-card-p1"
-            class="lg:col-span-5 felt-card rounded-2xl p-5 flex flex-col justify-between transition-all"
+            class="lg:col-span-5 felt-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all"
           >
             <div>
-              <div class="flex items-center justify-between gap-2 mb-3">
-                <div class="flex items-center gap-2.5">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-2">
                   <span
                     id="live-ball-dot-1"
-                    class="w-6 h-6 rounded-full ball-white inline-block"
+                    class="w-5 h-5 rounded-full ball-white inline-block shadow"
                   ></span>
                   <span
                     id="live-ball-name-1"
@@ -493,90 +493,91 @@
               </div>
               <h3
                 id="live-name-p1"
-                class="text-2xl sm:text-3xl font-bold text-white truncate"
+                class="text-xl sm:text-2xl font-bold text-white truncate"
               >
                 Tony Elena
               </h3>
             </div>
 
+            <!-- Gran Caja de Carambolas (Fondo Blanco o Amarillo según bola) -->
             <div
-              class="my-6 flex items-center justify-between bg-baize-950/90 border border-emerald-800/50 rounded-2xl p-6"
+              id="live-score-box-1"
+              class="my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 shadow-2xl transition-all"
             >
-              <div>
-                <span
-                  class="text-xs uppercase font-semibold text-emerald-400/70 block"
-                  >Carambolas</span
-                >
-                <div
-                  id="live-score-p1"
-                  class="text-6xl sm:text-7xl font-extrabold font-mono text-white leading-none mt-1"
-                >
-                  0
-                </div>
-              </div>
-              <div class="text-right space-y-1.5">
-                <div>
-                  <span class="text-[11px] uppercase text-emerald-400/70 block"
-                    >Serie Actual</span
-                  >
-                  <span
-                    id="live-run-p1"
-                    class="text-2xl font-bold font-mono text-gold-400"
-                    >0</span
-                  >
-                </div>
-                <div>
-                  <span class="text-[11px] uppercase text-emerald-400/70 block"
-                    >Serie Mayor</span
-                  >
-                  <span
-                    id="live-hr-p1"
-                    class="text-base font-bold font-mono text-white"
-                    >0</span
-                  >
-                </div>
-                <div>
-                  <span class="text-[11px] uppercase text-emerald-400/70 block"
-                    >Promedio</span
-                  >
-                  <span
-                    id="live-avg-p1"
-                    class="text-base font-bold font-mono text-emerald-300"
-                    >0.000</span
-                  >
-                </div>
-                <div>
-                  <span class="text-[11px] uppercase text-emerald-400/70 block"
-                    >3 Bandas</span
-                  >
-                  <span
-                    id="live-tb-p1"
-                    onclick="adjustLiveTB(1, -1)"
-                    title="Clic para restar 1 si hubo error"
-                    class="text-base font-bold font-mono text-amber-300 cursor-pointer hover:underline"
-                    >0</span
-                  >
-                </div>
+              <div
+                id="live-score-p1"
+                class="font-extrabold font-mono text-slate-950 leading-none select-none"
+              >
+                0
               </div>
             </div>
 
+            <!-- Fila de Estadísticas justo encima de la botonera -->
+            <div
+              class="grid grid-cols-4 gap-1 py-1 px-2 mb-2 rounded-xl bg-baize-950/90 border border-emerald-900/60 text-center"
+            >
+              <div>
+                <span class="text-[10px] uppercase text-emerald-400/80 block leading-tight font-semibold"
+                  >Actual</span
+                >
+                <span
+                  id="live-run-p1"
+                  class="text-sm sm:text-base font-bold font-mono text-gold-400"
+                  >0</span
+                >
+              </div>
+              <div>
+                <span class="text-[10px] uppercase text-emerald-400/80 block leading-tight font-semibold"
+                  >Mayor</span
+                >
+                <span
+                  id="live-hr-p1"
+                  class="text-sm sm:text-base font-bold font-mono text-white"
+                  >0</span
+                >
+              </div>
+              <div>
+                <span class="text-[10px] uppercase text-emerald-400/80 block leading-tight font-semibold"
+                  >Promedio</span
+                >
+                <span
+                  id="live-avg-p1"
+                  class="text-sm sm:text-base font-bold font-mono text-emerald-300"
+                  >0.000</span
+                >
+              </div>
+              <div>
+                <span class="text-[10px] uppercase text-emerald-400/80 block leading-tight font-semibold"
+                  >3 Bandas</span
+                >
+                <span
+                  id="live-tb-p1"
+                  onclick="adjustLiveTB(1, -1)"
+                  title="Clic para restar 1 si hubo error"
+                  class="text-sm sm:text-base font-bold font-mono text-amber-300 cursor-pointer hover:underline"
+                  >0</span
+                >
+              </div>
+            </div>
+
+            <!-- Botonera -->
             <div class="grid grid-cols-4 gap-2">
               <button
                 onclick="addLiveCarom(1, 1)"
-                class="col-span-2 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-lg shadow-lg active:scale-95 transition-all"
+                class="col-span-2 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base sm:text-lg shadow-lg active:scale-95 transition-all"
               >
                 +1 Carambola
               </button>
               <button
                 onclick="addLiveCarom(1, 2, true)"
-                class="py-3.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white font-bold text-sm font-mono active:scale-95 transition-all"
+                class="py-3 rounded-xl bg-emerald-800/90 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm font-mono active:scale-95 transition-all"
                 title="3 Bandas (Vale doble)"
               >
                 +2 (3B)
               </button>
               <button
                 onclick="addLiveCarom(1, -1)"
-                class="py-3.5 rounded-xl bg-rose-900/70 hover:bg-rose-800 text-rose-200 font-bold text-base font-mono active:scale-95 transition-all"
+                class="py-3 rounded-xl bg-rose-900/70 hover:bg-rose-800 text-rose-200 font-bold text-base font-mono active:scale-95 transition-all"
               >
                 -1
               </button>
@@ -671,14 +672,14 @@
           <!-- JUGADOR 2 -->
           <div
             id="live-card-p2"
-            class="lg:col-span-5 felt-card rounded-2xl p-5 flex flex-col justify-between transition-all"
+            class="lg:col-span-5 felt-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all"
           >
             <div>
-              <div class="flex items-center justify-between gap-2 mb-3">
-                <div class="flex items-center gap-2.5">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-2">
                   <span
                     id="live-ball-dot-2"
-                    class="w-6 h-6 rounded-full ball-yellow inline-block"
+                    class="w-5 h-5 rounded-full ball-yellow inline-block shadow"
                   ></span>
                   <span
                     id="live-ball-name-2"
@@ -694,90 +695,91 @@
               </div>
               <h3
                 id="live-name-p2"
-                class="text-2xl sm:text-3xl font-bold text-white truncate"
+                class="text-xl sm:text-2xl font-bold text-white truncate"
               >
                 Paco Vidal
               </h3>
             </div>
 
+            <!-- Gran Caja de Carambolas (Fondo Amarillo o Blanco según bola) -->
             <div
-              class="my-6 flex items-center justify-between bg-baize-950/90 border border-emerald-800/50 rounded-2xl p-6"
+              id="live-score-box-2"
+              class="my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 shadow-2xl transition-all"
             >
-              <div>
-                <span
-                  class="text-xs uppercase font-semibold text-emerald-400/70 block"
-                  >Carambolas</span
-                >
-                <div
-                  id="live-score-p2"
-                  class="text-6xl sm:text-7xl font-extrabold font-mono text-yellow-300 leading-none mt-1"
-                >
-                  0
-                </div>
-              </div>
-              <div class="text-right space-y-1.5">
-                <div>
-                  <span class="text-[11px] uppercase text-emerald-400/70 block"
-                    >Serie Actual</span
-                  >
-                  <span
-                    id="live-run-p2"
-                    class="text-2xl font-bold font-mono text-gold-400"
-                    >0</span
-                  >
-                </div>
-                <div>
-                  <span class="text-[11px] uppercase text-emerald-400/70 block"
-                    >Serie Mayor</span
-                  >
-                  <span
-                    id="live-hr-p2"
-                    class="text-base font-bold font-mono text-white"
-                    >0</span
-                  >
-                </div>
-                <div>
-                  <span class="text-[11px] uppercase text-emerald-400/70 block"
-                    >Promedio</span
-                  >
-                  <span
-                    id="live-avg-p2"
-                    class="text-base font-bold font-mono text-emerald-300"
-                    >0.000</span
-                  >
-                </div>
-                <div>
-                  <span class="text-[11px] uppercase text-emerald-400/70 block"
-                    >3 Bandas</span
-                  >
-                  <span
-                    id="live-tb-p2"
-                    onclick="adjustLiveTB(2, -1)"
-                    title="Clic para restar 1 si hubo error"
-                    class="text-base font-bold font-mono text-amber-300 cursor-pointer hover:underline"
-                    >0</span
-                  >
-                </div>
+              <div
+                id="live-score-p2"
+                class="font-extrabold font-mono text-slate-950 leading-none select-none"
+              >
+                0
               </div>
             </div>
 
+            <!-- Fila de Estadísticas justo encima de la botonera -->
+            <div
+              class="grid grid-cols-4 gap-1 py-1 px-2 mb-2 rounded-xl bg-baize-950/90 border border-emerald-900/60 text-center"
+            >
+              <div>
+                <span class="text-[10px] uppercase text-emerald-400/80 block leading-tight font-semibold"
+                  >Actual</span
+                >
+                <span
+                  id="live-run-p2"
+                  class="text-sm sm:text-base font-bold font-mono text-gold-400"
+                  >0</span
+                >
+              </div>
+              <div>
+                <span class="text-[10px] uppercase text-emerald-400/80 block leading-tight font-semibold"
+                  >Mayor</span
+                >
+                <span
+                  id="live-hr-p2"
+                  class="text-sm sm:text-base font-bold font-mono text-white"
+                  >0</span
+                >
+              </div>
+              <div>
+                <span class="text-[10px] uppercase text-emerald-400/80 block leading-tight font-semibold"
+                  >Promedio</span
+                >
+                <span
+                  id="live-avg-p2"
+                  class="text-sm sm:text-base font-bold font-mono text-emerald-300"
+                  >0.000</span
+                >
+              </div>
+              <div>
+                <span class="text-[10px] uppercase text-emerald-400/80 block leading-tight font-semibold"
+                  >3 Bandas</span
+                >
+                <span
+                  id="live-tb-p2"
+                  onclick="adjustLiveTB(2, -1)"
+                  title="Clic para restar 1 si hubo error"
+                  class="text-sm sm:text-base font-bold font-mono text-amber-300 cursor-pointer hover:underline"
+                  >0</span
+                >
+              </div>
+            </div>
+
+            <!-- Botonera -->
             <div class="grid grid-cols-4 gap-2">
               <button
                 onclick="addLiveCarom(2, 1)"
-                class="col-span-2 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-baize-950 font-bold text-lg shadow-lg active:scale-95 transition-all"
+                class="col-span-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-baize-950 font-bold text-base sm:text-lg shadow-lg active:scale-95 transition-all"
               >
                 +1 Carambola
               </button>
               <button
                 onclick="addLiveCarom(2, 2, true)"
-                class="py-3.5 rounded-xl bg-amber-600/80 hover:bg-amber-500 text-white font-bold text-sm font-mono active:scale-95 transition-all"
+                class="py-3 rounded-xl bg-amber-600/80 hover:bg-amber-500 text-white font-bold text-xs sm:text-sm font-mono active:scale-95 transition-all"
                 title="3 Bandas (Vale doble)"
               >
                 +2 (3B)
               </button>
               <button
                 onclick="addLiveCarom(2, -1)"
-                class="py-3.5 rounded-xl bg-rose-900/70 hover:bg-rose-800 text-rose-200 font-bold text-base font-mono active:scale-95 transition-all"
+                class="py-3 rounded-xl bg-rose-900/70 hover:bg-rose-800 text-rose-200 font-bold text-base font-mono active:scale-95 transition-all"
               >
                 -1
               </button>
