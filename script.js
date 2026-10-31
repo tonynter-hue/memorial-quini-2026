@@ -1227,10 +1227,9 @@ function updateLiveSetup() {
   renderLiveScoreboard();
 }
 
-function changeLiveP1Ball() {
-  const ballSelect = document.getElementById("live-p1-ball");
-  if (!ballSelect) return;
-  state.live.p1Ball = ballSelect.value;
+function toggleP1Ball() {
+  const current = state.live.p1Ball || "blanca";
+  state.live.p1Ball = current === "blanca" ? "amarilla" : "blanca";
   saveState();
   renderLiveScoreboard();
 }
@@ -1242,8 +1241,7 @@ function renderLiveScoreboard() {
   const modSelect = document.getElementById("live-modality");
   const targetInput = document.getElementById("live-target");
   const maxInnInput = document.getElementById("live-max-innings");
-  const ballSelect = document.getElementById("live-p1-ball");
-  const p2BallBadge = document.getElementById("live-p2-ball-badge");
+  const btnP1Ball = document.getElementById("live-p1-ball-btn");
 
   const p1Ball = l.p1Ball || "blanca";
 
@@ -1252,12 +1250,13 @@ function renderLiveScoreboard() {
   if (modSelect) modSelect.value = l.modality;
   if (targetInput) targetInput.value = l.target;
   if (maxInnInput) maxInnInput.value = l.maxInnings;
-  if (ballSelect) ballSelect.value = p1Ball;
-  if (p2BallBadge) {
-    p2BallBadge.innerHTML = p1Ball === "blanca" ? "🟡 Amarilla" : "⚪ Blanca";
+
+  // Botón selector exclusivo del Jugador 1
+  if (btnP1Ball) {
+    btnP1Ball.textContent = p1Ball === "blanca" ? "⚪ Blanca" : "🟡 Amarilla";
   }
 
-  // Actualizar indicadores visuales de bola en las tarjetas
+  // Actualizar indicadores visuales de bola en las tarjetas según la elección
   const dot1 = document.getElementById("live-ball-dot-1");
   const text1 = document.getElementById("live-ball-name-1");
   const dot2 = document.getElementById("live-ball-dot-2");
@@ -1399,7 +1398,6 @@ function finishLiveMatchToRecord() {
   document.getElementById("form-date").value = new Date().toISOString().split("T")[0];
   document.getElementById("form-innings").value = l.innings;
 
-  // Si Jugador 1 jugó con bola blanca, se mantiene P1=Blanca y P2=Amarilla en el acta
   if (p1Ball === "blanca") {
     document.getElementById("form-p1").value = l.p1;
     document.getElementById("form-car1").value = l.score1;
@@ -1410,7 +1408,6 @@ function finishLiveMatchToRecord() {
     document.getElementById("form-sm2").value = l.hr2;
     document.getElementById("form-tb2").value = l.tb2 || 0;
   } else {
-    // Si Jugador 1 eligió amarilla, Jugador 2 pasa a la casilla de Bola Blanca del acta
     document.getElementById("form-p1").value = l.p2;
     document.getElementById("form-car1").value = l.score2;
     document.getElementById("form-sm1").value = l.hr2;
@@ -1423,7 +1420,7 @@ function finishLiveMatchToRecord() {
 
   updateFormPreview();
   switchTab("new-match");
-  showToast("Datos cargados en el acta oficial respetando las bolas asignadas.");
+  showToast("Datos cargados en el acta oficial.");
 }
 // ==========================================
 // JUGADORES Y BACKUPS

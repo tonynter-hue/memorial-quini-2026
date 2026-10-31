@@ -378,45 +378,34 @@
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end"
           >
             <div>
-              <label
-                class="block text-[11px] font-semibold uppercase text-emerald-300/80 mb-1"
-                >Jugador 1</label
-              >
-              <div class="flex gap-1.5">
-                <select
-                  id="live-p1-select"
-                  onchange="updateLiveSetup()"
-                  class="flex-1 bg-baize-950 border border-emerald-700/60 rounded-lg px-3 py-2 text-sm text-white"
-                ></select>
-                <select
-                  id="live-p1-ball"
-                  onchange="changeLiveP1Ball()"
-                  title="Bola de Jugador 1"
-                  class="w-24 bg-baize-950 border border-gold-500/70 rounded-lg px-2 py-2 text-xs font-bold text-gold-400 cursor-pointer"
+              <div class="flex items-center justify-between mb-1">
+                <label for="live-p1-select" class="text-[11px] font-semibold uppercase text-emerald-300/80">Jugador 1</label>
+                <button
+                  type="button"
+                  id="live-p1-ball-btn"
+                  onclick="toggleP1Ball()"
+                  class="px-2 py-0.5 rounded bg-baize-900 border border-gold-500/80 text-[11px] font-bold text-gold-400 hover:bg-baize-800 transition-all cursor-pointer"
+                  title="Pulsa para cambiar la bola del Jugador 1"
                 >
-                  <option value="blanca">⚪ Blanca</option>
-                  <option value="amarilla">🟡 Amarilla</option>
-                </select>
+                  ⚪ Blanca
+                </button>
               </div>
+              <select
+                id="live-p1-select"
+                onchange="updateLiveSetup()"
+                class="w-full bg-baize-950 border border-emerald-700/60 rounded-lg px-3 py-2 text-sm text-white"
+              ></select>
             </div>
             <div>
               <label
                 class="block text-[11px] font-semibold uppercase text-yellow-300/80 mb-1"
                 >Jugador 2</label
               >
-              <div class="flex gap-1.5">
-                <select
-                  id="live-p2-select"
-                  onchange="updateLiveSetup()"
-                  class="flex-1 bg-baize-950 border border-emerald-700/60 rounded-lg px-3 py-2 text-sm text-white"
-                ></select>
-                <div
-                  id="live-p2-ball-badge"
-                  class="w-24 bg-baize-900 border border-emerald-800/80 rounded-lg px-2 py-2 text-xs font-bold text-slate-300 flex items-center justify-center select-none"
-                >
-                  🟡 Amarilla
-                </div>
-              </div>
+              <select
+                id="live-p2-select"
+                onchange="updateLiveSetup()"
+                class="w-full bg-baize-950 border border-emerald-700/60 rounded-lg px-3 py-2 text-sm text-white"
+              ></select>
             </div>
             <div>
               <label
