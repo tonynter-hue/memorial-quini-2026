@@ -1294,6 +1294,8 @@ function renderLiveScoreboard() {
   const runP2 = document.getElementById("live-run-p2");
   const hrP1 = document.getElementById("live-hr-p1");
   const hrP2 = document.getElementById("live-hr-p2");
+  const tbP1 = document.getElementById("live-tb-p1");
+  const tbP2 = document.getElementById("live-tb-p2");
   const innDisplay = document.getElementById("live-innings");
 
   if (nameP1) nameP1.textContent = l.p1;
@@ -1304,6 +1306,8 @@ function renderLiveScoreboard() {
   if (runP2) runP2.textContent = l.run2;
   if (hrP1) hrP1.textContent = l.hr1;
   if (hrP2) hrP2.textContent = l.hr2;
+  if (tbP1) tbP1.textContent = l.tb1 || 0;
+  if (tbP2) tbP2.textContent = l.tb2 || 0;
   if (innDisplay) innDisplay.textContent = l.innings;
 
   const inn = Math.max(1, l.innings);
