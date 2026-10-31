@@ -473,21 +473,15 @@
             class="lg:col-span-5 felt-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all"
           >
             <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2">
-                  <span
-                    id="live-ball-dot-1"
-                    class="w-5 h-5 rounded-full ball-white inline-block shadow shrink-0"
-                  ></span>
-                  <span
-                    id="live-ball-name-1"
-                    class="text-xs font-bold uppercase tracking-wider text-slate-200"
-                    >Bola Blanca</span
-                  >
-                </div>
+              <!-- Cabecera limpia centrada -->
+              <div class="flex items-center justify-center gap-2 mb-2 px-1">
+                <span
+                  id="live-ball-dot-1"
+                  class="w-4 h-4 sm:w-5 sm:h-5 rounded-full ball-white inline-block shadow shrink-0"
+                ></span>
                 <h3
                   id="live-name-p1"
-                  class="text-lg sm:text-2xl font-bold text-white truncate text-right"
+                  class="text-lg sm:text-2xl font-bold text-white truncate text-center"
                 >
                   Tony Elena
                 </h3>
@@ -596,8 +590,8 @@
                 Distancia: 90 car. | Límite: 100 ent.
               </p>
 
-              <!-- FECHA, HORA, DURACIÓN Y CONTROL START/FINISH -->
-              <div class="mt-2.5 pt-2 border-t border-emerald-900/60 w-full space-y-2">
+              <!-- FECHA, HORA, TIEMPO LIMPIO Y CONTROL START/FINISH -->
+              <div class="mt-2.5 pt-2 border-t border-emerald-900/60 w-full space-y-1.5">
                 <div id="live-timing-header-row" class="flex items-center justify-center gap-1.5 text-xs text-slate-300">
                   <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
                   <span id="live-display-date" class="font-mono text-slate-200">--/--/----</span>
@@ -606,10 +600,10 @@
                   <span id="live-display-time" class="font-mono text-slate-200">--:--</span>
                 </div>
 
-                <div class="flex items-center justify-center gap-1.5 text-xs">
-                  <span class="text-emerald-400/80 font-medium">Duración:</span>
-                  <span id="live-display-duration" class="font-mono font-bold text-gold-400 text-sm">0 min</span>
-                  <span id="live-status-badge" class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">En espera</span>
+                <!-- Tiempo sin la palabra 'Duración' ni 'min' para evitar desbordes -->
+                <div class="flex items-center justify-center gap-1.5 text-xs py-0.5">
+                  <span id="live-display-duration" class="font-mono font-black text-gold-400 text-base leading-none">0'</span>
+                  <span id="live-status-badge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">En espera</span>
                 </div>
 
                 <!-- Botón Start / Finish -->
@@ -670,21 +664,15 @@
             class="lg:col-span-5 felt-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all"
           >
             <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2">
-                  <span
-                    id="live-ball-dot-2"
-                    class="w-5 h-5 rounded-full ball-yellow inline-block shadow shrink-0"
-                  ></span>
-                  <span
-                    id="live-ball-name-2"
-                    class="text-xs font-bold uppercase tracking-wider text-yellow-300"
-                    >Bola Amarilla</span
-                  >
-                </div>
+              <!-- Cabecera limpia centrada -->
+              <div class="flex items-center justify-center gap-2 mb-2 px-1">
+                <span
+                  id="live-ball-dot-2"
+                  class="w-4 h-4 sm:w-5 sm:h-5 rounded-full ball-yellow inline-block shadow shrink-0"
+                ></span>
                 <h3
                   id="live-name-p2"
-                  class="text-lg sm:text-2xl font-bold text-white truncate text-right"
+                  class="text-lg sm:text-2xl font-bold text-white truncate text-center"
                 >
                   Paco Vidal
                 </h3>

@@ -1311,9 +1311,7 @@ function renderLiveScoreboard() {
 
   // Indicadores de bola en las cabeceras
   const dot1 = document.getElementById("live-ball-dot-1");
-  const text1 = document.getElementById("live-ball-name-1");
   const dot2 = document.getElementById("live-ball-dot-2");
-  const text2 = document.getElementById("live-ball-name-2");
 
   // Cajas grandes de puntos
   const box1 = document.getElementById("live-score-box-1");
@@ -1324,31 +1322,15 @@ function renderLiveScoreboard() {
   const scoreTextClasses = "text-7xl sm:text-8xl lg:text-[9.5rem] font-extrabold font-mono text-slate-950 leading-none select-none";
 
   if (p1Ball === "blanca") {
-    if (dot1) dot1.className = "w-5 h-5 rounded-full ball-white inline-block shadow shrink-0";
-    if (text1) {
-      text1.textContent = "Bola Blanca";
-      text1.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
-    }
-    if (dot2) dot2.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow shrink-0";
-    if (text2) {
-      text2.textContent = "Bola Amarilla";
-      text2.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
-    }
+    if (dot1) dot1.className = "w-4 h-4 sm:w-5 sm:h-5 rounded-full ball-white inline-block shadow shrink-0";
+    if (dot2) dot2.className = "w-4 h-4 sm:w-5 sm:h-5 rounded-full ball-yellow inline-block shadow shrink-0";
     if (box1) box1.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white shadow-2xl transition-all";
     if (score1) score1.className = scoreTextClasses;
     if (box2) box2.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-400 shadow-2xl transition-all";
     if (score2) score2.className = scoreTextClasses;
   } else {
-    if (dot1) dot1.className = "w-5 h-5 rounded-full ball-yellow inline-block shadow shrink-0";
-    if (text1) {
-      text1.textContent = "Bola Amarilla";
-      text1.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
-    }
-    if (dot2) dot2.className = "w-5 h-5 rounded-full ball-white inline-block shadow shrink-0";
-    if (text2) {
-      text2.textContent = "Bola Blanca";
-      text2.className = "text-xs font-bold uppercase tracking-wider text-slate-200";
-    }
+    if (dot1) dot1.className = "w-4 h-4 sm:w-5 sm:h-5 rounded-full ball-yellow inline-block shadow shrink-0";
+    if (dot2) dot2.className = "w-4 h-4 sm:w-5 sm:h-5 rounded-full ball-white inline-block shadow shrink-0";
     if (box1) box1.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-400 shadow-2xl transition-all";
     if (score1) score1.className = scoreTextClasses;
     if (box2) box2.className = "my-2.5 flex-1 flex items-center justify-center rounded-2xl border-2 border-slate-300 bg-white shadow-2xl transition-all";
@@ -1390,7 +1372,7 @@ function renderLiveScoreboard() {
   if (badgeMod) badgeMod.textContent = l.modality;
   if (targetDisp) targetDisp.textContent = `Distancia: ${l.target} car. | Límite: ${l.maxInnings} ent.`;
 
-  // Fecha, hora, duración y estado
+  // Fecha, hora, duración limpia y estado
   const dispDate = document.getElementById("live-display-date");
   const dispTime = document.getElementById("live-display-time");
   const dispDuration = document.getElementById("live-display-duration");
@@ -1412,14 +1394,15 @@ function renderLiveScoreboard() {
 
   const durationMin = getLiveDurationMinutes();
   if (dispDuration) {
-    dispDuration.textContent = `${durationMin} min`;
+    // Formato limpio sin 'min' que desborde
+    dispDuration.textContent = `${durationMin}'`;
   }
 
   // Estado y botones Start/Finish
   if (badgeStatus && btnContainer) {
     if (!l.isStarted) {
       badgeStatus.textContent = "En espera";
-      badgeStatus.className = "ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300";
+      badgeStatus.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300";
       btnContainer.innerHTML = `
         <button
           onclick="startLiveMatch()"
@@ -1431,7 +1414,7 @@ function renderLiveScoreboard() {
       `;
     } else if (!l.isFinished) {
       badgeStatus.textContent = "En juego";
-      badgeStatus.className = "ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-pulse";
+      badgeStatus.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-pulse";
       btnContainer.innerHTML = `
         <button
           onclick="stopLiveMatch()"
@@ -1443,7 +1426,7 @@ function renderLiveScoreboard() {
       `;
     } else {
       badgeStatus.textContent = "Finalizada";
-      badgeStatus.className = "ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gold-500/20 text-gold-400 border border-gold-500/50";
+      badgeStatus.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-gold-500/20 text-gold-400 border border-gold-500/50";
       btnContainer.innerHTML = `
         <button
           onclick="startLiveMatch()"
@@ -1476,7 +1459,7 @@ function renderLiveScoreboard() {
     liveTimerInterval = setInterval(() => {
       if (state.live && state.live.isStarted && !state.live.isFinished) {
         const durEl = document.getElementById("live-display-duration");
-        if (durEl) durEl.textContent = `${getLiveDurationMinutes()} min`;
+        if (durEl) durEl.textContent = `${getLiveDurationMinutes()}'`;
       }
     }, 15000);
   }
