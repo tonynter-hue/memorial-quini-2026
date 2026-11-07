@@ -856,11 +856,11 @@
       <style>
         @media print {
           @page {
-            size: A4 portrait !important;
+            size: 210mm 297mm !important; /* Estándar ISO A4 exacto */
             margin: 8mm 10mm !important;
           }
 
-          /* 1. Ocultar interfaz de la app, fondos oscuros y botones */
+          /* Ocultar elementos sobrantes */
           #main-header,
           main,
           #modal-pin,
@@ -872,24 +872,21 @@
             display: none !important;
           }
 
-          /* 2. Reset de pantalla completa para que Android pagine en vertical */
           html, body {
-            width: 100% !important;
-            height: auto !important;
-            min-height: auto !important;
-            overflow: visible !important;
-            position: static !important;
+            width: 210mm !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
             background: #ffffff !important;
             color: #0f172a !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            overflow: visible !important;
+            position: static !important;
           }
 
-          /* 3. Desactivar fixed y desenfoque que bloquean el botón guardar en móvil */
           #modal-stats {
             position: static !important;
             display: block !important;
             width: 100% !important;
+            max-width: 210mm !important;
             height: auto !important;
             max-height: none !important;
             overflow: visible !important;
@@ -902,7 +899,6 @@
             box-shadow: none !important;
           }
 
-          /* 4. Anular flex y scrolls internos para liberar todas las entradas */
           #modal-stats > div,
           #modal-stats .felt-card,
           #modal-stats .flex-1,
@@ -912,9 +908,9 @@
           #modal-stats .overflow-x-auto {
             display: block !important;
             position: static !important;
+            width: 100% !important;
             height: auto !important;
             max-height: none !important;
-            min-height: 0 !important;
             overflow: visible !important;
             box-shadow: none !important;
             border: none !important;
@@ -924,7 +920,6 @@
             color: #0f172a !important;
           }
 
-          /* 5. Cabecera */
           #modal-stats h3 {
             font-size: 1.25rem !important;
             font-weight: 900 !important;
@@ -939,7 +934,6 @@
             margin-bottom: 6px !important;
           }
 
-          /* 6. Bloque superior de KPIs en 4 columnas */
           #stats-comparativa-kpis {
             display: grid !important;
             grid-template-columns: repeat(4, 1fr) !important;
@@ -959,7 +953,6 @@
             color: #0f172a !important;
           }
 
-          /* 7. Nombres de jugadores destacados */
           #stats-tabla-header th {
             font-size: 1.05rem !important;
             font-weight: 900 !important;
@@ -969,7 +962,6 @@
             border: 1.5px solid #94a3b8 !important;
           }
 
-          /* 8. Tabla entrada a entrada completa */
           #modal-stats table {
             width: 100% !important;
             color: #0f172a !important;
@@ -1008,7 +1000,6 @@
             background: #f8fafc !important;
           }
 
-          /* 9. Frecuencia de tacadas */
           #stats-tacadas-grid {
             margin-top: 6px !important;
           }

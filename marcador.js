@@ -233,24 +233,31 @@ function renderLiveScoreboard() {
     }
   }
 
-  // RECUADRO AMARILLO TURNO ACTIVO
+  // GESTIÓN DE TURNO ACTIVO Y BLOQUEO VISUAL DE BOTONES
   const c1 = document.getElementById("live-card-p1");
   const c2 = document.getElementById("live-card-p2");
-  if (c1 && c2) {
-    const turnClasses = [
-      "ring-4",
-      "ring-gold-400",
-      "border-gold-400",
-      "shadow-[0_0_25px_rgba(250,204,21,0.5)]",
-      "active-turn-glow",
-    ];
+  const btnsP1 = c1 ? c1.querySelectorAll("button") : [];
+  const btnsP2 = c2 ? c2.querySelectorAll("button") : [];
 
+  const turnClasses = [
+    "ring-4",
+    "ring-gold-400",
+    "border-gold-400",
+    "shadow-[0_0_25px_rgba(250,204,21,0.5)]",
+    "active-turn-glow",
+  ];
+
+  if (c1 && c2) {
     if (l.turn === 1) {
       c1.classList.add(...turnClasses);
       c2.classList.remove(...turnClasses);
+      btnsP1.forEach((b) => b.classList.remove("opacity-35", "cursor-not-allowed"));
+      btnsP2.forEach((b) => b.classList.add("opacity-35", "cursor-not-allowed"));
     } else {
       c2.classList.add(...turnClasses);
       c1.classList.remove(...turnClasses);
+      btnsP2.forEach((b) => b.classList.remove("opacity-35", "cursor-not-allowed"));
+      btnsP1.forEach((b) => b.classList.add("opacity-35", "cursor-not-allowed"));
     }
   }
 
@@ -270,6 +277,14 @@ function renderLiveScoreboard() {
 
 function addLiveCarom(player, delta, es3B = false) {
   const l = state.live;
+
+  // Validación estricta de turno de juego
+  if (player !== l.turn) {
+    const jugadorEnTurno = l.turn === 1 ? l.p1 : l.p2;
+    showToast(`Turno de ${jugadorEnTurno}. Pulsa "Cambiar Turno" para alternar.`);
+    return;
+  }
+
   if (player === 1) {
     l.score1 = Math.max(0, l.score1 + delta);
     l.run1 = Math.max(0, l.run1 + delta);
@@ -307,6 +322,9 @@ function addLiveCarom(player, delta, es3B = false) {
 
 function adjustLiveTB(player, delta) {
   const l = state.live;
+  if (player !== l.turn) {
+    return;
+  }
   if (player === 1) {
     l.tb1 = Math.max(0, (l.tb1 || 0) + delta);
     l.lastWas3B1 = false;
