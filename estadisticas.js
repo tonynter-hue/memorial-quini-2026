@@ -1,6 +1,21 @@
 // ==========================================
 // CÁLCULO Y VISUALIZACIÓN DE ESTADÍSTICAS
 // ==========================================
+let datosPartidoActivoPDF = {
+  fecha: "",
+  p1: "Jugador1",
+  p2: "Jugador2",
+};
+
+function sanitizarParaNombreArchivo(texto) {
+  return (texto || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // quita tildes
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]/g, "_")
+    .replace(/_+/g, "_");
+}
+
 function calcularMetricasJugador(runs, scoreActual) {
   const list = runs || [];
   const totalInn = list.length;
@@ -24,7 +39,7 @@ function abrirEstadisticasLiveModal(matchCustom = null) {
   const modal = document.getElementById("modal-stats");
   if (!modal) return;
 
-  let p1Name, p2Name, p1Ball, score1, score2, runs1, runs2;
+  let p1Name, p2Name, p1Ball, score1, score2, runs1, runs2, fechaPartida;
 
   if (matchCustom) {
     p1Name = matchCustom.p1;
@@ -35,6 +50,7 @@ function abrirEstadisticasLiveModal(matchCustom = null) {
     runs1 = matchCustom.runs1 || [];
     runs2 = matchCustom.runs2 || [];
     const fechaFmt = typeof formatearFechaDDMMAAAA === "function" ? formatearFechaDDMMAAAA(matchCustom.date) : matchCustom.date;
+    fechaPartida = fechaFmt;
     document.getElementById("stats-modal-subtitle").textContent = `${matchCustom.round || "Liga Regular"} · ${fechaFmt} · Billar Elcano (Sevilla)`;
   } else {
     const l = state.live;
@@ -47,8 +63,18 @@ function abrirEstadisticasLiveModal(matchCustom = null) {
     runs2 = [...(l.runs2 || [])];
     if (l.turn === 1 && l.run1 > 0) runs1.push(l.run1);
     if (l.turn === 2 && l.run2 > 0) runs2.push(l.run2);
+
+    const fRaw = l.date || new Date().toISOString().split("T")[0];
+    fechaPartida = typeof formatearFechaDDMMAAAA === "function" ? formatearFechaDDMMAAAA(fRaw) : fRaw;
     document.getElementById("stats-modal-subtitle").textContent = `Marcador en Vivo · ${l.modality || "Libre"} · ${l.round || "Jornada 1"}`;
   }
+
+  // Guardar datos formateados para el nombre del archivo PDF
+  datosPartidoActivoPDF = {
+    fecha: fechaPartida.replace(/\//g, "-"),
+    p1: sanitizarParaNombreArchivo(p1Name),
+    p2: sanitizarParaNombreArchivo(p2Name),
+  };
 
   const m1 = calcularMetricasJugador(runs1, score1);
   const m2 = calcularMetricasJugador(runs2, score2);
@@ -151,6 +177,7 @@ function abrirEstadisticasLiveModal(matchCustom = null) {
     filasHtml ||
     `<tr><td colspan="8" class="py-4 text-center text-slate-400 text-xs">No hay entradas registradas aún.</td></tr>`;
 
+  // Columnas fijas 0 al 10 + entradas superiores a 10 que hayan ocurrido
   const clavesFijas = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const tacadasAltasSet = new Set();
 
@@ -207,8 +234,10 @@ function abrirEstadisticasLiveModal(matchCustom = null) {
 
 function imprimirEstadisticasPDF() {
   const tituloOriginal = document.title;
-  const subtitulo = document.getElementById("stats-modal-subtitle")?.textContent || "Partida";
-  document.title = `Estadisticas_${subtitulo.replace(/[^a-zA-Z0-9]/g, "_")}`;
+  const { fecha, p1, p2 } = datosPartidoActivoPDF;
+
+  // Asignar el nombre exacto que usará el navegador y Android al descargar el PDF
+  document.title = `${fecha || "Fecha"}_${p1}_vs_${p2}`;
 
   setTimeout(() => {
     window.print();
