@@ -1,8 +1,21 @@
 // ==========================================
 // FORMULARIO DE ACTAS E HISTORIAL
 // ==========================================
+function formatearFechaDDMMAAAA(fechaStr) {
+  if (!fechaStr) return "--/--/----";
+  if (fechaStr.includes("-")) {
+    const parts = fechaStr.split("-");
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+  }
+  return fechaStr;
+}
+
 function onRoundChange() {
-  const round = document.getElementById("form-round").value;
+  const roundEl = document.getElementById("form-round");
+  if (!roundEl) return;
+  const round = roundEl.value;
   const car1Input = document.getElementById("form-car1");
   if (!car1Input) return;
 
@@ -142,11 +155,13 @@ function saveMatchRecord(e) {
     return;
   }
 
+  const roundValue = document.getElementById("form-round").value;
+
   const matchData = {
     id: state.editingMatchId || "m_" + Date.now(),
     date: document.getElementById("form-date").value,
     time: document.getElementById("form-time").value,
-    round: document.getElementById("form-round").value,
+    round: roundValue,
     modality: document.getElementById("form-modality").value,
     innings: Number(document.getElementById("form-innings").value),
     minutes: Number(document.getElementById("form-minutes").value) || 0,
@@ -182,6 +197,10 @@ function saveMatchRecord(e) {
   delete state.tempMatchRuns1;
   delete state.tempMatchRuns2;
 
+  if (state.live) {
+    state.live.round = roundValue;
+  }
+
   document.getElementById("form-car1").value = 90;
   document.getElementById("form-sm1").value = 0;
   document.getElementById("form-tb1").value = 0;
@@ -203,9 +222,14 @@ function renderHistory() {
   const container = document.getElementById("history-list");
   if (!container) return;
 
-  const list = state.matches.filter(
-    (m) => mod === "TODAS" || m.modality === mod,
-  );
+  // Filtrado y ordenación automática de más moderna (arriba) a más antigua (abajo)
+  const list = state.matches
+    .filter((m) => mod === "TODAS" || m.modality === mod)
+    .sort((a, b) => {
+      const dtA = `${a.date || ""} ${a.time || "00:00"}`;
+      const dtB = `${b.date || ""} ${b.time || "00:00"}`;
+      return dtB.localeCompare(dtA);
+    });
 
   if (list.length === 0) {
     container.innerHTML = `<div class="felt-card rounded-xl p-8 text-center text-emerald-300/70 text-sm">No hay actas registradas para este filtro.</div>`;
@@ -216,6 +240,7 @@ function renderHistory() {
     .map((m) => {
       const avg1 = (m.car1 / m.innings).toFixed(3);
       const avg2 = (m.car2 / m.innings).toFixed(3);
+      const fechaDDMMAAAA = formatearFechaDDMMAAAA(m.date);
 
       let arbitrosTxt = "";
       if (m.referee) arbitrosTxt += ` · Juez: ${m.referee}`;
@@ -228,7 +253,7 @@ function renderHistory() {
             <div class="space-y-1.5">
                 <div class="flex flex-wrap items-center gap-2 text-xs">
                     <span class="px-2 py-0.5 rounded ${isPlayoff ? "bg-gold-500 text-baize-950 font-black" : "bg-gold-500/20 text-gold-400 font-bold"} uppercase">${m.round || m.modality}</span>
-                    <span class="font-mono text-emerald-300/80">${m.date}${m.time ? " " + m.time : ""}</span>
+                    <span class="font-mono text-emerald-300/80">${fechaDDMMAAAA}${m.time ? " " + m.time : ""}</span>
                     <span class="font-mono text-emerald-400 font-semibold">· ${m.innings} Entradas</span>
                     ${m.minutes ? `<span class="font-mono text-slate-300">· ${m.minutes} min</span>` : ""}
                     ${arbitrosTxt ? `<span class="text-emerald-300/80 font-medium">${arbitrosTxt}</span>` : ""}
@@ -256,7 +281,7 @@ function renderHistory() {
                       <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-gold-400"></i>
                       <span>Estadísticas</span>
                   </button>
-                ` : ''}
+                ` : ""}
                 <button onclick="editMatch('${m.id}')" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-gold-400 border border-gold-500/40 text-xs font-bold transition-all" title="Editar esta acta">
                     <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                     <span>Editar</span>

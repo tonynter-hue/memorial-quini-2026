@@ -42,11 +42,27 @@ function stopLiveMatch() {
 }
 
 function updateLiveSetup() {
+  const roundSel = document.getElementById("live-round");
+  if (roundSel) {
+    const prevRound = state.live.round;
+    state.live.round = roundSel.value;
+    if (isPlayoffRound(state.live.round) && !isPlayoffRound(prevRound)) {
+      state.live.target = 120;
+      const targetInput = document.getElementById("live-target");
+      if (targetInput) targetInput.value = 120;
+    } else if (!isPlayoffRound(state.live.round) && isPlayoffRound(prevRound) && state.live.target === 120) {
+      state.live.target = 90;
+      const targetInput = document.getElementById("live-target");
+      if (targetInput) targetInput.value = 90;
+    }
+  }
+
   state.live.p1 = document.getElementById("live-p1-select").value;
   state.live.p2 = document.getElementById("live-p2-select").value;
   state.live.modality = document.getElementById("live-modality").value;
   state.live.target = Number(document.getElementById("live-target").value || 90);
   state.live.maxInnings = Number(document.getElementById("live-max-innings").value || 100);
+
   saveState();
   renderLiveScoreboard();
 }
@@ -62,6 +78,7 @@ function renderLiveScoreboard() {
   const l = state.live;
   const p1Select = document.getElementById("live-p1-select");
   const p2Select = document.getElementById("live-p2-select");
+  const roundSelect = document.getElementById("live-round");
   const modSelect = document.getElementById("live-modality");
   const targetInput = document.getElementById("live-target");
   const maxInnInput = document.getElementById("live-max-innings");
@@ -74,6 +91,7 @@ function renderLiveScoreboard() {
 
   if (p1Select) p1Select.value = l.p1;
   if (p2Select) p2Select.value = l.p2;
+  if (roundSelect) roundSelect.value = l.round || "Jornada 1";
   if (modSelect) modSelect.value = l.modality;
   if (targetInput) targetInput.value = l.target;
   if (maxInnInput) maxInnInput.value = l.maxInnings;
@@ -147,7 +165,7 @@ function renderLiveScoreboard() {
 
   const badgeMod = document.getElementById("live-badge-modality");
   const targetDisp = document.getElementById("live-target-display");
-  if (badgeMod) badgeMod.textContent = l.modality;
+  if (badgeMod) badgeMod.textContent = `${l.modality} · ${l.round || "Jornada 1"}`;
   if (targetDisp) targetDisp.textContent = `Distancia: ${l.target} car. | Límite: ${l.maxInnings} ent.`;
 
   const dispDate = document.getElementById("live-display-date");
@@ -215,9 +233,7 @@ function renderLiveScoreboard() {
     }
   }
 
-  // ========================================================
-  // RECUADRO AMARILLO Y RESALTE DEL JUGADOR EN SU TURNO
-  // ========================================================
+  // RECUADRO AMARILLO TURNO ACTIVO
   const c1 = document.getElementById("live-card-p1");
   const c2 = document.getElementById("live-card-p2");
   if (c1 && c2) {
@@ -226,7 +242,7 @@ function renderLiveScoreboard() {
       "ring-gold-400",
       "border-gold-400",
       "shadow-[0_0_25px_rgba(250,204,21,0.5)]",
-      "active-turn-glow"
+      "active-turn-glow",
     ];
 
     if (l.turn === 1) {
@@ -371,6 +387,11 @@ function finishLiveMatchToRecord() {
 
   cancelEditMatch();
 
+  const formRound = document.getElementById("form-round");
+  if (formRound) {
+    formRound.value = l.round || "Jornada 1";
+  }
+
   document.getElementById("form-modality").value = l.modality;
   document.getElementById("form-date").value = l.date || new Date().toISOString().split("T")[0];
   document.getElementById("form-time").value = l.startTime || "10:00";
@@ -406,7 +427,11 @@ function finishLiveMatchToRecord() {
     state.tempMatchRuns2 = r1;
   }
 
+  if (typeof onRoundChange === "function") {
+    onRoundChange();
+  }
+
   updateFormPreview();
   switchTab("new-match");
-  showToast("Datos y duración cargados en el acta oficial.");
+  showToast("Datos, jornada y duración cargados en el acta oficial.");
 }

@@ -41,6 +41,7 @@ let state = {
   currentModalityFilter: "Libre",
   editingMatchId: null,
   live: {
+    round: "Jornada 1",
     p1: "Tony Elena",
     p2: "Paco Vidal",
     modality: "Libre",
@@ -113,6 +114,9 @@ function loadStateFallback() {
     const data = JSON.parse(local);
     state.players = data.players || DEFAULT_PLAYERS;
     state.matches = data.matches || [];
+    if (data.live) {
+      state.live = { ...state.live, ...data.live };
+    }
   } else if (typeof DATOS_TORNEO !== "undefined") {
     state.players = DATOS_TORNEO.players;
     state.matches = DATOS_TORNEO.matches;
