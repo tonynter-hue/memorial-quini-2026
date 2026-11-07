@@ -151,7 +151,6 @@ function abrirEstadisticasLiveModal(matchCustom = null) {
     filasHtml ||
     `<tr><td colspan="8" class="py-4 text-center text-slate-400 text-xs">No hay entradas registradas aún.</td></tr>`;
 
-  // Columnas fijas 0 al 10 + solo las que superen 10 que hayan ocurrido
   const clavesFijas = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const tacadasAltasSet = new Set();
 
@@ -210,8 +209,13 @@ function imprimirEstadisticasPDF() {
   const tituloOriginal = document.title;
   const subtitulo = document.getElementById("stats-modal-subtitle")?.textContent || "Partida";
   document.title = `Estadisticas_${subtitulo.replace(/[^a-zA-Z0-9]/g, "_")}`;
-  window.print();
-  document.title = tituloOriginal;
+
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      document.title = tituloOriginal;
+    }, 2500);
+  }, 150);
 }
 
 function cerrarEstadisticasModal() {

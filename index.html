@@ -855,30 +855,166 @@
     <div id="modal-stats" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
       <style>
         @media print {
-          #modal-stats button,
-          #modal-stats-footer,
+          @page {
+            size: A4 portrait !important;
+            margin: 8mm 10mm !important;
+          }
+
+          /* 1. Ocultar interfaz de la app, fondos oscuros y botones */
           #main-header,
           main,
-          #toast {
+          #modal-pin,
+          #modal-boletin,
+          #modal-jugador,
+          #toast,
+          #modal-stats-footer,
+          #modal-stats button {
             display: none !important;
           }
+
+          /* 2. Reset de pantalla completa para que Android pagine en vertical */
+          html, body {
+            width: 100% !important;
+            height: auto !important;
+            min-height: auto !important;
+            overflow: visible !important;
+            position: static !important;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          /* 3. Desactivar fixed y desenfoque que bloquean el botón guardar en móvil */
           #modal-stats {
             position: static !important;
             display: block !important;
-            background: transparent !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            border: none !important;
-          }
-          #modal-stats > div {
-            background: #ffffff !important;
-            color: #0f172a !important;
-            box-shadow: none !important;
-            border: none !important;
+            width: 100% !important;
+            height: auto !important;
             max-height: none !important;
             overflow: visible !important;
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
             padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+
+          /* 4. Anular flex y scrolls internos para liberar todas las entradas */
+          #modal-stats > div,
+          #modal-stats .felt-card,
+          #modal-stats .flex-1,
+          #modal-stats .space-y-4,
+          #modal-stats .max-h-64,
+          #modal-stats .overflow-y-auto,
+          #modal-stats .overflow-x-auto {
+            display: block !important;
+            position: static !important;
+            height: auto !important;
+            max-height: none !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+            color: #0f172a !important;
+          }
+
+          /* 5. Cabecera */
+          #modal-stats h3 {
+            font-size: 1.25rem !important;
+            font-weight: 900 !important;
+            color: #04140e !important;
+            margin-bottom: 2px !important;
+          }
+
+          #stats-modal-subtitle {
+            font-size: 0.82rem !important;
+            color: #334155 !important;
+            font-weight: 600 !important;
+            margin-bottom: 6px !important;
+          }
+
+          /* 6. Bloque superior de KPIs en 4 columnas */
+          #stats-comparativa-kpis {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 4px !important;
+            margin-bottom: 6px !important;
+          }
+
+          #stats-comparativa-kpis > div {
+            background: #f8fafc !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #0f172a !important;
+            padding: 3px 4px !important;
+          }
+
+          #stats-comparativa-kpis span,
+          #stats-comparativa-kpis div {
+            color: #0f172a !important;
+          }
+
+          /* 7. Nombres de jugadores destacados */
+          #stats-tabla-header th {
+            font-size: 1.05rem !important;
+            font-weight: 900 !important;
+            color: #04140e !important;
+            padding: 4px 6px !important;
+            background: #e2e8f0 !important;
+            border: 1.5px solid #94a3b8 !important;
+          }
+
+          /* 8. Tabla entrada a entrada completa */
+          #modal-stats table {
+            width: 100% !important;
+            color: #0f172a !important;
+            border: 1px solid #94a3b8 !important;
+            border-collapse: collapse !important;
+            page-break-inside: auto !important;
+          }
+
+          #modal-stats table thead {
+            display: table-header-group !important;
+          }
+
+          #modal-stats table tr {
+            page-break-inside: avoid !important;
+            page-break-after: auto !important;
+          }
+
+          #modal-stats table thead tr:last-child th {
+            background: #f1f5f9 !important;
+            color: #334155 !important;
+            font-size: 0.72rem !important;
+            font-weight: 800 !important;
+            border-bottom: 1.5px solid #94a3b8 !important;
+            padding: 2px 2px !important;
+          }
+
+          #modal-stats table tbody td {
+            color: #0f172a !important;
+            font-size: 0.72rem !important;
+            line-height: 1.1 !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding: 1.5px 2px !important;
+          }
+
+          #modal-stats table tbody tr:nth-child(even) {
+            background: #f8fafc !important;
+          }
+
+          /* 9. Frecuencia de tacadas */
+          #stats-tacadas-grid {
+            margin-top: 6px !important;
+          }
+
+          #stats-tacadas-grid table {
+            margin-top: 4px !important;
           }
         }
       </style>
@@ -930,7 +1066,7 @@
             </div>
           </div>
 
-          <!-- 3. Distribución de Tacadas (Única y limpia) -->
+          <!-- 3. Distribución de Tacadas -->
           <div class="felt-card p-3 rounded-xl border border-emerald-800/60">
             <h4 class="text-xs font-black uppercase text-amber-300 tracking-wider mb-2 flex items-center gap-1.5">
               <i data-lucide="sliders" class="w-4 h-4"></i>
@@ -940,7 +1076,7 @@
           </div>
         </div>
 
-        <!-- Pie de botones con ocultación forzada para impresión -->
+        <!-- Pie de botones -->
         <div id="modal-stats-footer" class="border-t border-emerald-800/60 pt-3 flex justify-between items-center gap-2">
           <button
             type="button"
@@ -961,7 +1097,6 @@
         </div>
       </div>
     </div>
-
     <!-- Scripts Oficiales Únicos -->
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
